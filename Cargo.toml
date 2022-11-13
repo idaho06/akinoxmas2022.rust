@@ -1,0 +1,19 @@
+[package]
+name = "akinoxmas2022"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = {version = "0.8.5"} # for stars randomness
+byte-slice-cast = "1.2.2"  # for converting slices from u8 to u32
+# image = "0.24.5"
+[dependencies.image]
+version = "0.24.5"
+default-features = false
+features = ["png"]
+
+[dependencies.sdl2]
+version = "0.35.2"
+features = ["bundled", "unsafe_textures"]  # video, keyboard events
