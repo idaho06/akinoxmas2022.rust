@@ -1,10 +1,11 @@
-use crate::vector::Vec3;
+use crate::vector::{Vec3, Vec2};
 use rand::Rng;
 
 
 pub struct Starfield {
     stars: Vec<Vec3>,
     limits: (f32, f32),
+    screen_stars: Vec<Vec2>,
 }
 
 impl Starfield {
@@ -24,7 +25,11 @@ impl Starfield {
 
         //println!("{:?}", stars);
 
-        Self { stars: stars, limits: limits }
+        Self { 
+            stars: stars, 
+            limits: limits,
+            screen_stars: Vec::<Vec2>::new(),
+        }
 
     }
 
