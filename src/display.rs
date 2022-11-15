@@ -20,8 +20,8 @@ pub struct Display {
     sdl_context: Sdl,
     //video_subsystem: VideoSubsystem,
     timer: TimerSubsystem,
-    //w_width: u32,
-    //w_height: u32,
+    w_width: u32,
+    w_height: u32,
     //window: Window,
     canvas: Canvas<Window>,
     //texture_creator: TextureCreator<WindowContext>,
@@ -56,7 +56,7 @@ impl Display {
         //let w_height: u32 = 480;
 
         let window = video_subsystem
-            .window("rust-sdl2 demo: Video", w_width, w_height)
+            .window("AkinoXmas 2022", w_width, w_height)
             .position_centered()
             .opengl()
             .borderless()
@@ -116,8 +116,8 @@ impl Display {
             sdl_context: sdl_context,
             //video_subsystem: video_subsystem,
             timer: timer,
-            //w_width: w_width,
-            //w_height: w_height,
+            w_width: w_width,
+            w_height: w_height,
             //window: window,
             canvas: canvas,
             texture: texture,
@@ -152,6 +152,10 @@ impl Display {
 
     pub fn t_height(&self) -> u32 {
         self.t_height
+    }
+
+    pub fn w_height(&self) -> u32 {
+        self.w_height
     }
 
     pub fn put_pixel_raw(&mut self, x: usize, y: usize, r: u8, g: u8, b: u8) {
@@ -195,9 +199,6 @@ impl Display {
             .into_rgba8();
         let mut buffer_for_sprite = Vec::<u8>::new();
         for image_pixel in image_from_file.pixels() {
-            
-            
-            
             buffer_for_sprite.push(image_pixel.0[2]); // blue
             buffer_for_sprite.push(image_pixel.0[1]); // green
             buffer_for_sprite.push(image_pixel.0[0]); // red
@@ -221,6 +222,17 @@ impl Display {
                 let width = (texture.query().width as f32 * size_factor) as u32;
                 let height = (texture.query().height as f32 * size_factor) as u32;
                 self.canvas.copy(texture, None, Some(Rect::new(x,y,width,height))).unwrap()
+            },
+            None => (),
+        }
+    }
+
+    pub fn put_sprite_rect(&mut self, name: &str, x: i32, y: i32, rect: &Rect){
+        match self.sprites.get(name) {
+            Some(texture) => {
+                let src = *rect;
+                let dest = Rect::new(x,y,rect.width(),rect.height());
+                self.canvas.copy(texture, Some(src), Some(dest)).unwrap()
             },
             None => (),
         }

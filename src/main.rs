@@ -1,5 +1,6 @@
 extern crate sdl2;
 
+use akinoxmas2022::scroller::Scroller;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use akinoxmas2022::display::Display;
@@ -11,6 +12,8 @@ pub fn main() -> Result<(), String> {
     let mut event_pump = display.event_pump();
 
     let mut starfield = Starfield::new();
+
+    let scroller = Scroller::new(&mut display);
 
     display.add_sprite("akinosoft", "./assets/akinosoft.png");
 
@@ -46,6 +49,8 @@ pub fn main() -> Result<(), String> {
         display.color_buffer_to_canvas();
 
         display.put_sprite("akinosoft", 0, 0, 0.5);
+
+        scroller.render(&mut display);
 
         display.present_canvas();
 
