@@ -9,6 +9,7 @@ pub mod display;
 pub mod vector;
 pub mod starfield;
 pub mod point;
+pub mod scroller;
 
 /* 
 fn posterize(min: f32, max: f32, value: f32) -> u8 {
