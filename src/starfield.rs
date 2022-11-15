@@ -1,11 +1,12 @@
-use crate::vector::{Vec3, Vec2};
+use crate::{vector::{Vec3}, point::Point, display::Display};
 use rand::Rng;
 
 
 pub struct Starfield {
     stars: Vec<Vec3>,
     limits: (f32, f32),
-    screen_stars: Vec<Vec2>,
+    screen_stars: Vec<Point>,
+    direction: Vec3,
 }
 
 impl Starfield {
@@ -28,7 +29,12 @@ impl Starfield {
         Self { 
             stars: stars, 
             limits: limits,
-            screen_stars: Vec::<Vec2>::new(),
+            screen_stars: Vec::<Point>::new(),
+            direction: Vec3 { 
+                x: 0.0,
+                y: 0.0,
+                z: -0.5,
+            }
         }
 
     }
@@ -63,7 +69,46 @@ impl Starfield {
         //println!("{:?}", self.stars);
     }
 
+    fn posterize(&self, min: f32, max: f32, value: f32) -> u8 {
+        if value < min { return 0xff }
+        if value > max { return 0x00 }
+        let delta = max - min;
+        let value = value - min;
+        let value = value / delta; // this should return a value between 0.0 and 1.0
+        let value = 255.0 - (value * 255.0);
+        value.round() as u8
+    }
+
     // update
+    pub fn update(&mut self, t: u32, display: &Display) {
+        let camera = Vec3{x:0.0, y:0.0, z:1.01};
+        let time_factor = (t as f32 / 1000.0) as f32;
+        let displacement = self.direction.mul(time_factor);
+        self.displace(&displacement);
+        self.screen_stars.truncate(0); // self.screen_stars.clear();
+        for star3d in self.stars.iter() {
+            // apply camera displacement
+            let cam_star3d = star3d.add(&camera);
+            // project to screen space
+            let mut point: Point = Point::new();
+            point.v = display.project(&cam_star3d);
+            let color = self.posterize(-1.0, 1.0, star3d.z);
+            point.r = color;
+            point.g = color;
+            point.b = color;
+            self.screen_stars.push(point);
+        }
+    
+    }
 
     // render
+    pub fn render(&self, display: &mut Display) {
+        let stars_2d = &self.screen_stars;
+        for star in stars_2d.iter() {
+            let x: i32 = (star.v.x.round() + (display.t_width() as f32 / 2.0)) as i32;
+            let y: i32 = (star.v.y.round() + (display.t_height() as f32 / 2.0)) as i32;
+            display.put_pixel(x, y, star.r, star.g, star.b);
+        }
+    }
+
 }

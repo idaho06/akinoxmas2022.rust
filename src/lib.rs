@@ -1,13 +1,16 @@
+/* 
 use display::Display;
 use point::Point;
 use starfield::Starfield;
 use vector::{Vec2, Vec3};
+*/
 
 pub mod display;
 pub mod vector;
 pub mod starfield;
 pub mod point;
 
+/* 
 fn posterize(min: f32, max: f32, value: f32) -> u8 {
     if value < min { return 0xff }
     if value > max { return 0x00 }
@@ -54,3 +57,4 @@ pub fn render_starfield(display: &mut Display, stars_2d: &Vec<Point>) {
         display.put_pixel(x, y, star.r, star.g, star.b);
     }
 }
+*/

@@ -3,26 +3,14 @@ extern crate sdl2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use akinoxmas2022::display::Display;
-use akinoxmas2022::point::Point;
 use akinoxmas2022::starfield::Starfield;
-use akinoxmas2022::vector::Vec3;
-use akinoxmas2022::{render_starfield, update_starfield};
 
 pub fn main() -> Result<(), String> {
     let mut display = Display::new();
     display.cls();
     let mut event_pump = display.event_pump();
 
-    let mut starfield_3d = Starfield::new();
-    let mut starfield_2d: Vec<Point> = vec![]; // TODO: move this to starfield.rs
-    let mut direction: Vec3 = Vec3 { // TODO: move this to starfield
-        x: 0.0,
-        y: 0.0,
-        z: -0.5,
-    };
-    //let v = Vec3{x:5.0, y:5.0, z:5.0};
-    //starfield_3d.displace(&v);
-    //let mut rng = rand::thread_rng();
+    let mut starfield = Starfield::new();
 
     display.add_sprite("akinosoft", "./assets/akinosoft.png");
 
@@ -51,14 +39,9 @@ pub fn main() -> Result<(), String> {
 
         display.clear_color_buffer(0, 0, 0);
 
-        update_starfield(
-            last_frame_delta,
-            &direction,
-            &mut starfield_3d,
-            &mut starfield_2d,
-        ); //applies 3d animation and transform 3d points to screen 2d
+        starfield.update(last_frame_delta, &display);
 
-        render_starfield(&mut display, &starfield_2d); // draws points to color buffer
+        starfield.render(&mut display);
 
         display.color_buffer_to_canvas();
 

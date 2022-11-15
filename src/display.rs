@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::ffi::c_void;
 
 use byte_slice_cast::AsMutSliceOf;
-use image::RgbaImage;
+//use image::RgbaImage;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
 use sdl2::pixels::{Color, PixelFormatEnum};
@@ -13,6 +13,8 @@ use sdl2::video::Window;
 use sdl2::{EventPump, Sdl, TimerSubsystem};
 //use sdl2::rect::{Point, Rect};
 use sdl2::sys::{SDL_DisplayMode, SDL_GetCurrentDisplayMode};
+
+use crate::vector::{Vec3, Vec2};
 
 pub struct Display {
     sdl_context: Sdl,
@@ -221,6 +223,14 @@ impl Display {
                 self.canvas.copy(texture, None, Some(Rect::new(x,y,width,height))).unwrap()
             },
             None => (),
+        }
+    }
+
+    pub fn project(&self, v: &Vec3) -> Vec2 {
+        let fov_factor: f32 = 320.0; // TODO: calculate FOV from color buffer size
+        Vec2 { 
+            x: (fov_factor * v.x) / v.z , 
+            y: (fov_factor * -v.y) / v.z ,
         }
     }
 }
