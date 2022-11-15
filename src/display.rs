@@ -227,7 +227,7 @@ impl Display {
     }
 
     pub fn project(&self, v: &Vec3) -> Vec2 {
-        let fov_factor: f32 = 320.0; // TODO: calculate FOV from color buffer size
+        let fov_factor: f32 = 640.0; // TODO: calculate FOV from color buffer size
         Vec2 { 
             x: (fov_factor * v.x) / v.z , 
             y: (fov_factor * -v.y) / v.z ,
