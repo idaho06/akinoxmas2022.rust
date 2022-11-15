@@ -16,7 +16,7 @@ pub fn main() -> Result<(), String> {
 
     let start = display.ticks();
     //let target_ticks_frame: u32 = 1000/60;
-    let mut frame_time = start;
+    let mut frame_time: u32;
     let mut last_frame_delta: u32 = 0;
 
     let mut frames: usize = 0;
