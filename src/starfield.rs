@@ -33,7 +33,7 @@ impl Starfield {
             direction: Vec3 { 
                 x: 0.0,
                 y: 0.0,
-                z: -0.5,
+                z: -1.0,
             }
         }
 
@@ -83,6 +83,8 @@ impl Starfield {
     pub fn update(&mut self, t: u32, display: &Display) {
         let camera = Vec3{x:0.0, y:0.0, z:1.01};
         let time_factor = (t as f32 / 1000.0) as f32;
+        self.direction.rotate_y(0.1 * time_factor);
+        self.direction.normalize();
         let displacement = self.direction.mul(time_factor);
         self.displace(&displacement);
         self.screen_stars.truncate(0); // self.screen_stars.clear();
