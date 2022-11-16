@@ -3,7 +3,7 @@ extern crate sdl2;
 use std::collections::HashMap;
 use std::ffi::c_void;
 
-use byte_slice_cast::AsMutSliceOf;
+use byte_slice_cast::AsMutSliceOf; // cast to a different type for slices u8->u32
 //use image::RgbaImage;
 use sdl2::rect::Rect;
 use sdl2::surface::Surface;
@@ -49,21 +49,25 @@ impl Display {
             SDL_GetCurrentDisplayMode(0 as i32, &mut dm);
         }
 
-        println!("w: {} h: {}", dm.w, dm.h);
-        let w_width: u32 = dm.w as u32;
-        let w_height: u32 = dm.h as u32;
-        //let w_width: u32 = 640;
-        //let w_height: u32 = 480;
+        println!("Current display w: {} h: {}", dm.w, dm.h);
+        //let w_width: u32 = dm.w as u32;
+        //let w_height: u32 = dm.h as u32;
+        
+        let w_width: u32 = 1920;
+        let w_height: u32 = 1080;
+        println!("Forcing display w: {} h: {}", w_width, w_height);
 
         let window = video_subsystem
             .window("AkinoXmas 2022", w_width, w_height)
             .position_centered()
-            .opengl()
+            .vulkan()
+            //.opengl()
             .borderless()
-            //.fullscreen()
+            .fullscreen()
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
+        //window.set_icon(icon); // This needs a surface. TODO: Create a load_icon function returning a surface using image crate instead of SDL_image
 
         let canvas = window
             .into_canvas()
