@@ -60,10 +60,12 @@ impl Display {
         let window = video_subsystem
             .window("AkinoXmas 2022", w_width, w_height)
             .position_centered()
-            .vulkan()
+            //.vulkan()
             //.opengl()
             .borderless()
-            .fullscreen()
+            //.fullscreen()
+            //.resizable()
+            //.maximized()
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
@@ -74,6 +76,7 @@ impl Display {
             .accelerated()
             //.software()
             .present_vsync()
+            //.target_texture()
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
@@ -193,12 +196,17 @@ impl Display {
     }
 
     pub fn color_buffer_to_canvas(&mut self) {
+         
         self.texture
             .with_lock(None, |buffer: &mut [u8], _pitch: usize| {
                 buffer.copy_from_slice(&self.color_buffer);
             })
             .unwrap();
-
+        
+        /* 
+        self.texture
+            .update(None, &self.color_buffer, self.t_width as usize * 4).unwrap();
+        */
         self.canvas.copy(&self.texture, None, None).unwrap();
     }
 
