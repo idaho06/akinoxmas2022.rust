@@ -32,6 +32,11 @@ impl Scroller {
         self.letter_positions.clear(); //self.letter_positions.truncate(0);
         let mut letters = self.message.chars();
         let mut x = self.first_char_x;
+
+        self.first_char_x -= 1; // TODO: displacement based on t
+
+        // TODO: first char beyond limits check
+
         'message: loop {
             if x > display.w_width() as i32 {
                 break 'message;
@@ -44,7 +49,7 @@ impl Scroller {
             self.letter_positions.push((src_rect,dst_rect));
             x += src_rect.width() as i32;
         }
-        self.first_char_x -= 1;
+        
     }
 
     pub fn render(&self, display: &mut Display) {
