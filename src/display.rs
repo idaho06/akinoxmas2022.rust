@@ -162,6 +162,11 @@ impl Display {
         self.w_height
     }
 
+    pub fn w_width(&self) -> u32 {
+        self.w_width
+    }
+
+
     pub fn put_pixel_raw(&mut self, x: usize, y: usize, r: u8, g: u8, b: u8) {
         let offset = (y * self.t_width as usize * 4) + (x * 4);
         self.color_buffer[offset] = b as u8; // blue
@@ -241,6 +246,16 @@ impl Display {
             None => (),
         }
     }
+
+    pub fn put_sprite_rect_rect(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect){
+        match self.sprites.get(name) {
+            Some(texture) => {
+                self.canvas.copy(texture, Some(*src_rect), Some(*dst_rect)).unwrap()
+            },
+            None => (),
+        }
+    }
+
 
     pub fn project(&self, v: &Vec3) -> Vec2 {
         let fov_factor: f32 = 640.0; // TODO: calculate FOV from color buffer size

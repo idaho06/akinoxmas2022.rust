@@ -13,7 +13,7 @@ pub fn main() -> Result<(), String> {
 
     let mut starfield = Starfield::new();
 
-    let scroller = Scroller::new(&mut display);
+    let mut scroller = Scroller::new(&mut display);
 
     display.add_sprite("akinosoft", "./assets/akinosoft.png");
 
@@ -43,6 +43,8 @@ pub fn main() -> Result<(), String> {
         display.clear_color_buffer(0, 0, 0);
 
         starfield.update(last_frame_delta, &display);
+
+        scroller.update(last_frame_delta, &display);
 
         starfield.render(&mut display);
 

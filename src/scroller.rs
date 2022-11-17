@@ -10,8 +10,8 @@ pub struct Scroller {
     first_char_x: i32,
     // list of Rects of the characters in the font texture?
     char_map: HashMap<String, Rect>,
+    letter_positions: Vec<(Rect, Rect)>,
 }
-
 
 impl Scroller {
     pub fn new(display: &mut Display) -> Self {
@@ -20,34 +20,51 @@ impl Scroller {
         let char_map = Self::create_char_map();
         // Populate the string message
         Self {
-            message: String::from("     ABC 123 !\"$     "),
+            message: String::from("ABC 123 !\"$   ABABABABBABABA BBABABABAB BABABABABABABBABA BABABABABBABABABAB BABABABABBABABABA  "),
             string_pos: 0,
-            first_char_x: 0,
+            first_char_x: display.w_width() as i32,
             char_map,
+            letter_positions: Vec::new(),
         }
     }
     pub fn update(&mut self, t: u32, display: &Display) {
         // Calculate positions of current characters using time passed
+        self.letter_positions.clear(); //self.letter_positions.truncate(0);
+        let mut letters = self.message.chars();
+        let mut x = self.first_char_x;
+        'message: loop {
+            if x > display.w_width() as i32 {
+                break 'message;
+            }
+            let letter = letters.next().unwrap_or(' ');
+            let src_rect = self.char_map.get(&letter.to_string()).unwrap().clone();
+            let mut dst_rect = src_rect.clone();
+            dst_rect.set_x(x);
+            dst_rect.set_y(display.w_height() as i32 / 2);
+            self.letter_positions.push((src_rect,dst_rect));
+            x += src_rect.width() as i32;
+        }
+        self.first_char_x -= 1;
     }
 
     pub fn render(&self, display: &mut Display) {
-        // actually copying the texture/buffers to display 
+        // actually copying the texture/buffers to display
         // apply effects?
+        /* 
         let mut letters = self.message.chars();
-        let mut x = self.first_char_x; 
+        let mut x = self.first_char_x;
         'message: loop {
             if x > display.t_width() as i32 {
                 break 'message;
             }
             let letter = letters.next().unwrap_or(' ');
             let rect = self.char_map.get(&letter.to_string()).unwrap();
-            display.put_sprite_rect(
-                "font", 
-                x, 
-                display.w_height() as i32 / 2, 
-                rect
-            );
+            display.put_sprite_rect("font", x, display.w_height() as i32 / 2, rect);
             x += rect.width() as i32;
+        }
+        */
+        for (src_rect,dst_rect) in &self.letter_positions {
+            display.put_sprite_rect_rect("font", src_rect, dst_rect);
         }
     }
 
