@@ -7,10 +7,11 @@ use crate::display::Display;
 pub struct Scroller {
     message: String,
     string_pos: usize,
-    first_char_x: i32,
+    first_char_x: f32,
     // list of Rects of the characters in the font texture?
     char_map: HashMap<String, Rect>,
     letter_positions: Vec<(Rect, Rect)>,
+    speed: f32,
 }
 
 impl Scroller {
@@ -20,34 +21,54 @@ impl Scroller {
         let char_map = Self::create_char_map();
         // Populate the string message
         Self {
-            message: String::from("ABC 123 !\"$   ABABABABBABABA BBABABABAB BABABABABABABBABA BABABABABBABABABAB BABABABABBABABABA  "),
+            message: String::from("ABC 123 !\"$   ABABABABBABAB"),
             string_pos: 0,
-            first_char_x: display.w_width() as i32,
+            first_char_x: display.w_width() as f32,
             char_map,
             letter_positions: Vec::new(),
+            speed: 640.0,
         }
     }
     pub fn update(&mut self, t: u32, display: &Display) {
-        // Calculate positions of current characters using time passed
         self.letter_positions.clear(); //self.letter_positions.truncate(0);
-        let mut letters = self.message.chars();
+        let mut letters = self.message.chars(); // iterator!
+
+        // x calculation on speed and time
+        let time_factor = (t as f32 / 1000.0) as f32;
+        self.first_char_x -= self.speed * time_factor;
         let mut x = self.first_char_x;
 
-        self.first_char_x -= 1; // TODO: displacement based on t
+        // if we are beyond the message, start again
+        if self.string_pos >= self.message.len() {
+            self.string_pos = 0;
+            self.first_char_x = display.w_width() as f32;
+            x = self.first_char_x;
+        }
+        // get first letter rect
+        let first_letter = self.message.chars().nth(self.string_pos).unwrap_or(' ');
+        let first_letter_rect = self.char_map.get(&first_letter.to_string()).unwrap().clone();
 
-        // TODO: first char beyond limits check
+        // check if first letter is beyond the screen
+        if (x + first_letter_rect.width() as f32) < 0.0 {
+            self.string_pos+=1;
+            self.first_char_x = x + first_letter_rect.width() as f32;
+            x = self.first_char_x;
+        }
 
-        'message: loop {
-            if x > display.w_width() as i32 {
+        if self.string_pos > 0 { // discard all previous letters
+            _ = letters.nth(self.string_pos - 1).unwrap();
+        }
+        'message: loop { // calculate letter rects for font and screen
+            if x > display.w_width() as f32 {
                 break 'message;
             }
             let letter = letters.next().unwrap_or(' ');
             let src_rect = self.char_map.get(&letter.to_string()).unwrap().clone();
             let mut dst_rect = src_rect.clone();
-            dst_rect.set_x(x);
+            dst_rect.set_x(x.round() as i32);
             dst_rect.set_y(display.w_height() as i32 / 2);
             self.letter_positions.push((src_rect,dst_rect));
-            x += src_rect.width() as i32;
+            x += src_rect.width() as f32;
         }
         
     }
