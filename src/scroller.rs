@@ -21,7 +21,8 @@ impl Scroller {
         let char_map = Self::create_char_map();
         // Populate the string message
         Self {
-            message: String::from("ABC 123 !\"$   ABABABABBABAB"),
+            message: String::from("Este es un mensaje de AkinoSoft al mundo!
+            AkinoPower! Las demos de navidad mas cutres del mundo.".replace("\n", "")),
             string_pos: 0,
             first_char_x: display.w_width() as f32,
             char_map,
@@ -63,7 +64,7 @@ impl Scroller {
                 break 'message;
             }
             let letter = letters.next().unwrap_or(' ');
-            let src_rect = self.char_map.get(&letter.to_string()).unwrap().clone();
+            let src_rect = self.char_map.get(&letter.to_string()).expect(&format!("Rect not found by char: {}", letter)).clone();
             let mut dst_rect = src_rect.clone();
             dst_rect.set_x(x.round() as i32);
             dst_rect.set_y(display.w_height() as i32 / 2);
@@ -137,6 +138,89 @@ impl Scroller {
         char_map.insert('E'.to_string(), Rect::new(786, 260, 55, 100));
         char_map.insert('F'.to_string(), Rect::new(861, 260, 52, 100));
         char_map.insert('G'.to_string(), Rect::new(933, 260, 65, 100));
+        char_map.insert('H'.to_string(), Rect::new(20, 380, 67, 100));
+        char_map.insert('I'.to_string(), Rect::new(107, 380, 44, 100));
+        char_map.insert('J'.to_string(), Rect::new(171, 380, 47, 100));
+        char_map.insert('K'.to_string(), Rect::new(238, 380, 66, 100));
+        char_map.insert('L'.to_string(), Rect::new(324, 380, 53, 100));
+        char_map.insert('M'.to_string(), Rect::new(397, 380, 76, 100));
+        char_map.insert('N'.to_string(), Rect::new(493, 380, 68, 100));
+        char_map.insert('O'.to_string(), Rect::new(581, 380, 68, 100));
+        char_map.insert('P'.to_string(), Rect::new(669, 380, 59, 100));
+        char_map.insert('Q'.to_string(), Rect::new(748, 380, 68, 100));
+        char_map.insert('R'.to_string(), Rect::new(836, 380, 66, 100));
+        char_map.insert('S'.to_string(), Rect::new(922, 380, 57, 100));
+        char_map.insert('T'.to_string(), Rect::new(20, 500, 60, 100));
+        char_map.insert('U'.to_string(), Rect::new(100, 500, 65, 100));
+        char_map.insert('V'.to_string(), Rect::new(185, 500, 67, 100));
+        char_map.insert('W'.to_string(), Rect::new(272, 500, 94 , 100));
+        char_map.insert('X'.to_string(), Rect::new(386, 500, 65, 100));
+        char_map.insert('Y'.to_string(), Rect::new(471, 500, 75, 100));
+        char_map.insert('Z'.to_string(), Rect::new(556, 500, 55, 100));
+        char_map.insert('['.to_string(), Rect::new(631, 500, 43, 100));
+        char_map.insert('\\'.to_string(), Rect::new(694, 500, 55, 100));
+        char_map.insert(']'.to_string(), Rect::new(769, 500, 43, 100));
+        char_map.insert('^'.to_string(), Rect::new(832, 500, 69, 100));
+        char_map.insert('_'.to_string(), Rect::new(921, 500, 63, 100));
+        char_map.insert('`'.to_string(), Rect::new(20, 620, 57, 100));
+        char_map.insert('a'.to_string(), Rect::new(97, 620, 53, 100));
+        char_map.insert('b'.to_string(), Rect::new(170, 620, 56, 100));
+        char_map.insert('c'.to_string(), Rect::new(246, 620, 47, 100));
+        char_map.insert('d'.to_string(), Rect::new(313, 620, 56, 100));
+        char_map.insert('e'.to_string(), Rect::new(389, 620, 53, 100));
+        char_map.insert('f'.to_string(), Rect::new(462, 620, 38, 100));
+        char_map.insert('g'.to_string(), Rect::new(520, 620, 56, 100));
+        char_map.insert('h'.to_string(), Rect::new(596, 620, 57, 100));
+        char_map.insert('i'.to_string(), Rect::new(673, 620, 27, 100));
+        char_map.insert('j'.to_string(), Rect::new(720, 620, 37, 100));
+        char_map.insert('k'.to_string(), Rect::new(777, 620, 56, 100));
+        char_map.insert('l'.to_string(), Rect::new(853, 620, 27, 100));
+        char_map.insert('m'.to_string(), Rect::new(900, 620, 85, 100));
+        char_map.insert('n'.to_string(), Rect::new(20, 740, 57, 100));
+        char_map.insert('o'.to_string(), Rect::new(97, 740, 55, 100));
+        char_map.insert('p'.to_string(), Rect::new(172, 740, 56, 100));
+        char_map.insert('q'.to_string(), Rect::new(248, 740, 56, 100));
+        char_map.insert('r'.to_string(), Rect::new(324, 740, 40, 100));
+        char_map.insert('s'.to_string(), Rect::new(384, 740, 47, 100));
+        char_map.insert('t'.to_string(), Rect::new(451, 740, 38, 100));
+        char_map.insert('u'.to_string(), Rect::new(509, 740, 57, 100));
+        char_map.insert('v'.to_string(), Rect::new(586, 740, 57, 100));
+        char_map.insert('w'.to_string(), Rect::new(663, 740, 82, 100));
+        char_map.insert('x'.to_string(), Rect::new(765, 740, 58, 100));
+        char_map.insert('y'.to_string(), Rect::new(843, 740, 57, 100));
+        char_map.insert('z'.to_string(), Rect::new(917, 740, 48, 100));
+        char_map.insert('{'.to_string(), Rect::new(20, 860, 57, 100));
+        char_map.insert('|'.to_string(), Rect::new(97, 860, 43, 100));
+        char_map.insert('}'.to_string(), Rect::new(160, 860, 57, 100));
+        char_map.insert('~'.to_string(), Rect::new(237, 860, 69, 100));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         char_map
     }
