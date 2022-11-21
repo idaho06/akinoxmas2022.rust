@@ -22,7 +22,14 @@ impl Scroller {
         // Populate the string message
         Self {
             message: "Este es un mensaje de AkinoSoft al mundo!
-            AkinoPower! Las demos de navidad mas cutres del mundo.".replace('\n', ""),
+ AkinoPower! Las demos de navidad mas cutres de la demoscene.
+ No conoces al grupo AkinoSoft? Somos los mejores coders, preventas
+ y administradores de sistemas que ha existido. Somos ricos y guapos,
+ como jodidas estrellas de rock.
+ FELIZ NAVIDAD CABRONES!
+ Saludos a mis coleguitas Ikky, Palo, Ruben3D, Rx, Lethe.
+ Besitos a mis amores Marta, Raquel y Ester."
+                .replace('\n', ""),
             string_pos: 0,
             first_char_x: display.w_width() as f32,
             char_map,
@@ -49,19 +56,24 @@ impl Scroller {
         let first_letter = self.message.chars().nth(self.string_pos).unwrap_or(' ');
         // clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
         //let first_letter_rect = self.char_map.get(&first_letter.to_string()).unwrap().clone();
-        let first_letter_rect = *self.char_map.get(&first_letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", first_letter));
+        let first_letter_rect = *self
+            .char_map
+            .get(&first_letter.to_string())
+            .unwrap_or_else(|| panic!("Rect not found by char: {}", first_letter));
 
         // check if first letter is beyond the screen
         if (x + first_letter_rect.width() as f32) < 0.0 {
-            self.string_pos+=1;
+            self.string_pos += 1;
             self.first_char_x = x + first_letter_rect.width() as f32;
             x = self.first_char_x;
         }
 
-        if self.string_pos > 0 { // discard all previous letters
+        if self.string_pos > 0 {
+            // discard all previous letters
             _ = letters.nth(self.string_pos - 1).unwrap();
         }
-        'message: loop { // calculate letter rects for font and screen
+        'message: loop {
+            // calculate letter rects for font and screen
             if x > display.w_width() as f32 {
                 break 'message;
             }
@@ -70,21 +82,23 @@ impl Scroller {
             //let src_rect = self.char_map.get(&letter.to_string()).expect(&format!("Rect not found by char: {}", letter)).clone();
             //clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
             //let src_rect = self.char_map.get(&letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", letter)).clone();
-            let src_rect = *self.char_map.get(&letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", letter));
+            let src_rect = *self
+                .char_map
+                .get(&letter.to_string())
+                .unwrap_or_else(|| panic!("Rect not found by char: {}", letter));
             //let mut dst_rect = src_rect.clone(); // clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
             let mut dst_rect = src_rect;
             dst_rect.set_x(x.round() as i32);
-            dst_rect.set_y(display.w_height() as i32 / 2);
-            self.letter_positions.push((src_rect,dst_rect));
+            dst_rect.set_y(display.w_height() as i32 - 100_i32);
+            self.letter_positions.push((src_rect, dst_rect));
             x += src_rect.width() as f32;
         }
-        
     }
 
     pub fn render(&self, display: &mut Display) {
         // actually copying the texture/buffers to display
         // apply effects?
-        /* 
+        /*
         let mut letters = self.message.chars();
         let mut x = self.first_char_x;
         'message: loop {
@@ -97,7 +111,7 @@ impl Scroller {
             x += rect.width() as i32;
         }
         */
-        for (src_rect,dst_rect) in &self.letter_positions {
+        for (src_rect, dst_rect) in &self.letter_positions {
             display.put_sprite_rect_rect("font", src_rect, dst_rect);
         }
     }
@@ -160,7 +174,7 @@ impl Scroller {
         char_map.insert('T'.to_string(), Rect::new(20, 500, 60, 100));
         char_map.insert('U'.to_string(), Rect::new(100, 500, 65, 100));
         char_map.insert('V'.to_string(), Rect::new(185, 500, 67, 100));
-        char_map.insert('W'.to_string(), Rect::new(272, 500, 94 , 100));
+        char_map.insert('W'.to_string(), Rect::new(272, 500, 94, 100));
         char_map.insert('X'.to_string(), Rect::new(386, 500, 65, 100));
         char_map.insert('Y'.to_string(), Rect::new(471, 500, 75, 100));
         char_map.insert('Z'.to_string(), Rect::new(556, 500, 55, 100));
@@ -200,34 +214,6 @@ impl Scroller {
         char_map.insert('|'.to_string(), Rect::new(97, 860, 43, 100));
         char_map.insert('}'.to_string(), Rect::new(160, 860, 57, 100));
         char_map.insert('~'.to_string(), Rect::new(237, 860, 69, 100));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         char_map
     }
