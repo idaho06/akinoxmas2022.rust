@@ -21,8 +21,8 @@ impl Scroller {
         let char_map = Self::create_char_map();
         // Populate the string message
         Self {
-            message: String::from("Este es un mensaje de AkinoSoft al mundo!
-            AkinoPower! Las demos de navidad mas cutres del mundo.".replace("\n", "")),
+            message: "Este es un mensaje de AkinoSoft al mundo!
+            AkinoPower! Las demos de navidad mas cutres del mundo.".replace('\n', ""),
             string_pos: 0,
             first_char_x: display.w_width() as f32,
             char_map,
@@ -47,7 +47,9 @@ impl Scroller {
         }
         // get first letter rect
         let first_letter = self.message.chars().nth(self.string_pos).unwrap_or(' ');
-        let first_letter_rect = self.char_map.get(&first_letter.to_string()).unwrap().clone();
+        // clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
+        //let first_letter_rect = self.char_map.get(&first_letter.to_string()).unwrap().clone();
+        let first_letter_rect = *self.char_map.get(&first_letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", first_letter));
 
         // check if first letter is beyond the screen
         if (x + first_letter_rect.width() as f32) < 0.0 {
@@ -64,8 +66,13 @@ impl Scroller {
                 break 'message;
             }
             let letter = letters.next().unwrap_or(' ');
-            let src_rect = self.char_map.get(&letter.to_string()).expect(&format!("Rect not found by char: {}", letter)).clone();
-            let mut dst_rect = src_rect.clone();
+            // clippy warning: use of `expect` followed by a function call
+            //let src_rect = self.char_map.get(&letter.to_string()).expect(&format!("Rect not found by char: {}", letter)).clone();
+            //clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
+            //let src_rect = self.char_map.get(&letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", letter)).clone();
+            let src_rect = *self.char_map.get(&letter.to_string()).unwrap_or_else(|| panic!("Rect not found by char: {}", letter));
+            //let mut dst_rect = src_rect.clone(); // clippy warning: using `clone` on type `display::sdl2::rect::Rect` which implements the `Copy` trait
+            let mut dst_rect = src_rect;
             dst_rect.set_x(x.round() as i32);
             dst_rect.set_y(display.w_height() as i32 / 2);
             self.letter_positions.push((src_rect,dst_rect));

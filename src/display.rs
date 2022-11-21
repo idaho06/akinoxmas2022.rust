@@ -32,6 +32,13 @@ pub struct Display {
     sprites: HashMap<String, Texture>,
 }
 
+//clippy warning: you should consider adding a `Default` implementation for `Display`
+impl Default for Display {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Display {
     pub fn new() -> Self {
         let sdl_context = sdl2::init().unwrap();
@@ -43,10 +50,14 @@ impl Display {
             w: 0,
             h: 0,
             refresh_rate: 0,
-            driverdata: 0 as *mut c_void,
+            // clippy warning: `0 as *mut _` detected
+            //driverdata: 0 as *mut c_void,
+            driverdata: std::ptr::null_mut::<c_void>(),
         };
         unsafe {
-            SDL_GetCurrentDisplayMode(0 as i32, &mut dm);
+            // clippy warning: casting integer literal to `i32` is unnecessary
+            //SDL_GetCurrentDisplayMode(0 as i32, &mut dm);
+            SDL_GetCurrentDisplayMode(0_i32, &mut dm);
         }
 
         println!("Current display w: {} h: {}", dm.w, dm.h);
@@ -120,16 +131,25 @@ impl Display {
         //let test = pixel_data2.into_raw().into_boxed_slice();
 
         Self {
-            sdl_context: sdl_context,
+            // clippy warning: redundant field names in struct initialization
+            //sdl_context: sdl_context,
+            sdl_context,
             //video_subsystem: video_subsystem,
-            timer: timer,
-            w_width: w_width,
-            w_height: w_height,
+            //timer: timer,
+            timer,
+            //w_width: w_width,
+            w_width,
+            //w_height: w_height,
+            w_height,
             //window: window,
-            canvas: canvas,
-            texture: texture,
-            t_width: t_width,
-            t_height: t_height,
+            //canvas: canvas,
+            canvas,
+            //texture: texture,
+            texture,
+            //t_width: t_width,
+            t_width,
+            //t_height: t_height,
+            t_height,
             color_buffer: pixel_data,
             sprites: HashMap::new(),
         }
@@ -175,7 +195,9 @@ impl Display {
         self.color_buffer[offset] = b as u8; // blue
         self.color_buffer[offset + 1] = g as u8; // green
         self.color_buffer[offset + 2] = r as u8; // red
-        self.color_buffer[offset + 3] = 255 as u8; // ?? alpha but seems ignored */
+        self.color_buffer[offset + 3] = 255_u8;
+        // clippy warning: casting integer literal to `u8` is unnecessary
+        //self.color_buffer[offset + 3] = 255 as u8; // ?? alpha but seems ignored */
                                                    //canvas.draw_point(Point::new(x as i32, y as i32))?;
     }
 
@@ -212,7 +234,9 @@ impl Display {
 
     pub fn add_sprite(&mut self, name: &str, filename: &str) {
         let image_from_file = image::open(filename)
-            .expect(format!("Cannot read image file: {}", filename).as_str())
+            // clippy warning: use of `expect` followed by a function call
+            //.expect(format!("Cannot read image file: {}", filename).as_str())
+            .unwrap_or_else(|_| panic!("Cannot read image file: {}", filename))
             .into_rgba8();
         let mut buffer_for_sprite = Vec::<u8>::new();
         for image_pixel in image_from_file.pixels() {
@@ -233,7 +257,9 @@ impl Display {
             texture_creator.create_texture_from_surface(surface_for_sprite).unwrap());
     }
 
-    pub fn put_sprite(&mut self, name: &str, x: i32, y: i32, size_factor: f32) { 
+    pub fn put_sprite(&mut self, name: &str, x: i32, y: i32, size_factor: f32) {
+        // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
+        /* 
         match self.sprites.get(name) {
             Some(texture) => {
                 let width = (texture.query().width as f32 * size_factor) as u32;
@@ -242,9 +268,17 @@ impl Display {
             },
             None => (),
         }
+        */
+        if let Some(texture) = self.sprites.get(name) {
+            let width = (texture.query().width as f32 * size_factor) as u32;
+            let height = (texture.query().height as f32 * size_factor) as u32;
+            self.canvas.copy(texture, None, Some(Rect::new(x,y,width,height))).unwrap()
+        }
     }
 
     pub fn put_sprite_rect(&mut self, name: &str, x: i32, y: i32, rect: &Rect){
+        // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
+        /* 
         match self.sprites.get(name) {
             Some(texture) => {
                 let src = *rect;
@@ -253,14 +287,26 @@ impl Display {
             },
             None => (),
         }
+        */
+        if let Some(texture) = self.sprites.get(name) {
+            let src = *rect;
+            let dest = Rect::new(x,y,rect.width(),rect.height());
+            self.canvas.copy(texture, Some(src), Some(dest)).unwrap()
+        }
     }
 
     pub fn put_sprite_rect_rect(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect){
+        // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
+        /* 
         match self.sprites.get(name) {
             Some(texture) => {
                 self.canvas.copy(texture, Some(*src_rect), Some(*dst_rect)).unwrap()
             },
             None => (),
+        }
+        */
+        if let Some(texture) = self.sprites.get(name) {
+            self.canvas.copy(texture, Some(*src_rect), Some(*dst_rect)).unwrap()
         }
     }
 

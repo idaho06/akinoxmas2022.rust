@@ -1,6 +1,5 @@
-use crate::{vector::{Vec3}, point::Point, display::Display};
+use crate::{display::Display, point::Point, vector::Vec3};
 use rand::Rng;
-
 
 pub struct Starfield {
     stars: Vec<Vec3>,
@@ -9,16 +8,26 @@ pub struct Starfield {
     direction: Vec3,
 }
 
+impl Default for Starfield {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Starfield {
     pub fn new() -> Self {
         // Create a vector of random Vec3 in space between (-1.0, -1.0, -1,0) to (1.0, 1.0, 1.0)
         let num_stars: usize = 2000;
-        let zero_vec = Vec3{x: 0.0, y: 0.0, z: 0.0};
+        let zero_vec = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        };
         let mut stars = vec![zero_vec; num_stars];
         let mut rng = rand::thread_rng();
         let limits = (-1.0, 1.0);
 
-        for star in stars.iter_mut(){
+        for star in stars.iter_mut() {
             star.x = rng.gen_range(limits.0..limits.1);
             star.y = rng.gen_range(limits.0..limits.1);
             star.z = rng.gen_range(limits.0..limits.1);
@@ -26,25 +35,27 @@ impl Starfield {
 
         //println!("{:?}", stars);
 
-        Self { 
-            stars: stars, 
-            limits: limits,
+        // clippy warning: redundant field names in struct initialization
+        Self {
+            //stars: stars,
+            //limits: limits,
+            stars,
+            limits,
             screen_stars: Vec::<Point>::new(),
-            direction: Vec3 { 
+            direction: Vec3 {
                 x: 0.0,
                 y: 0.0,
                 z: -1.0,
-            }
+            },
         }
-
     }
 
     pub fn stars(&self) -> &Vec<Vec3> {
         &self.stars
     }
 
-    pub fn displace(&mut self, v: &Vec3){
-        for star in self.stars.iter_mut(){
+    pub fn displace(&mut self, v: &Vec3) {
+        for star in self.stars.iter_mut() {
             *star = star.add(v);
             if star.x > self.limits.1 {
                 star.x = self.limits.0 + star.x.fract();
@@ -64,14 +75,17 @@ impl Starfield {
             if star.z < self.limits.0 {
                 star.z = self.limits.1 - star.z.fract();
             }
-            
         }
         //println!("{:?}", self.stars);
     }
 
     fn posterize(&self, min: f32, max: f32, value: f32) -> u8 {
-        if value < min { return 0xff }
-        if value > max { return 0x00 }
+        if value < min {
+            return 0xff;
+        }
+        if value > max {
+            return 0x00;
+        }
         let delta = max - min;
         let value = value - min;
         let value = value / delta; // this should return a value between 0.0 and 1.0
@@ -81,7 +95,11 @@ impl Starfield {
 
     // update
     pub fn update(&mut self, t: u32, display: &Display) {
-        let camera = Vec3{x:0.0, y:0.0, z:1.01};
+        let camera = Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 1.01,
+        };
         let time_factor = (t as f32 / 1000.0) as f32;
         self.direction.rotate_y(0.1 * time_factor);
         self.direction.normalize();
@@ -100,7 +118,6 @@ impl Starfield {
             point.b = color;
             self.screen_stars.push(point);
         }
-    
     }
 
     // render
@@ -112,5 +129,4 @@ impl Starfield {
             display.put_pixel(x, y, star.r, star.g, star.b);
         }
     }
-
 }

@@ -154,7 +154,7 @@ impl Vec3 {
     }
 
     pub fn to_vec4(&self) -> Vec4 {
-        Vec4 { x: self.x, y: self.y, z: self.z, w: 1.0 as f32 }
+        Vec4 { x: self.x, y: self.y, z: self.z, w: 1.0_f32 }
     }
 
 

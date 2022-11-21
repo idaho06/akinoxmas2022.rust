@@ -1,7 +1,6 @@
 use crate::vector::Vec2;
 
-#[derive(Clone)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Point {
     pub v: Vec2,
     pub a: u8,
@@ -10,16 +9,22 @@ pub struct Point {
     pub b: u8,
 }
 
+impl Default for Point {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Point {
-    pub fn new () -> Self {
-        let v = Vec2 {x: 0.0, y: 0.0};
+    pub fn new() -> Self {
+        let v = Vec2 { x: 0.0, y: 0.0 };
         let a: u8 = 0xff;
         let r: u8 = 0x00;
         let g: u8 = 0x00;
-        let b: u8 = 0x00; 
+        let b: u8 = 0x00;
         Self { v, a, r, g, b }
     }
-    
+
     pub fn color4b(&self) -> u32 {
         u32::from_be_bytes([self.a, self.r, self.g, self.b]) //ARGB888
     }
