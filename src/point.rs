@@ -1,6 +1,6 @@
 use crate::vector::Vec2;
 
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub struct Point {
     pub v: Vec2,
     pub a: u8,
