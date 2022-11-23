@@ -27,6 +27,8 @@ pub fn main() -> Result<(), String> {
 
     let mut frames: usize = 0;
 
+    //display.clear_color_buffer(0, 0, 0);
+
     'running: loop {
         frame_time = display.ticks();
         // check input
@@ -51,13 +53,13 @@ pub fn main() -> Result<(), String> {
 
         platonics.update(last_frame_delta, &display);
 
-        //starfield.render(&mut display);
+        starfield.render(&mut display);
 
         platonics.render(&mut display);
 
         display.color_buffer_to_canvas();
 
-        //display.put_sprite("akinosoft", 0, 0, 0.5);
+        display.put_sprite("akinosoft", 0, 0, 0.5);
 
         scroller.render(&mut display);
 

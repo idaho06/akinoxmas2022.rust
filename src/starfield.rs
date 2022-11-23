@@ -102,6 +102,8 @@ impl Starfield {
         };
         let time_factor = (t as f32 / 1000.0) as f32;
         self.direction.rotate_y(0.1 * time_factor);
+        //self.direction.rotate_x(0.1 * time_factor);
+        //self.direction.rotate_z(0.1 * time_factor);
         self.direction.normalize();
         let displacement = self.direction.mul(time_factor);
         self.displace(&displacement);

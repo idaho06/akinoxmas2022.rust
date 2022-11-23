@@ -136,19 +136,31 @@ impl Vec3 {
     }
 
     pub fn rotate_x(&mut self, angle: f32) {
-        self.y = self.y * angle.cos() - self.z * angle.sin();
-        self.z = self.y * angle.sin() + self.z * angle.cos();
+        //self.y = self.y * angle.cos() - self.z * angle.sin();
+        //self.z = self.y * angle.sin() + self.z * angle.cos();
+        (self.y, self.z) = (
+            self.y * angle.cos() - self.z * angle.sin(),
+            self.y * angle.sin() + self.z * angle.cos()
+        );
     }
 
     pub fn rotate_y(&mut self, angle: f32) {
-        self.x = self.x * angle.cos() - self.z * angle.sin();
-        self.z = self.x * angle.sin() + self.z * angle.cos();
+        //self.x = self.x * angle.cos() - self.z * angle.sin();
+        //self.z = self.x * angle.sin() + self.z * angle.cos();
+        (self.x, self.z) = (
+            self.x * angle.cos() - self.z * angle.sin(),
+            self.x * angle.sin() + self.z * angle.cos()
+        );
     }    
 
     pub fn rotate_z(&mut self, angle: f32) {
-        self.x = (self.x * angle.cos()) - (self.y * angle.sin());
-        self.y = (self.x * angle.sin()) + (self.y * angle.cos());
+        //self.x = (self.x * angle.cos()) - (self.y * angle.sin());
+        //self.y = (self.x * angle.sin()) + (self.y * angle.cos());
         //self.z = self.z;
+        (self.x, self.y) = (
+            (self.x * angle.cos()) - (self.y * angle.sin()),
+            (self.x * angle.sin()) + (self.y * angle.cos())
+        );
     }
 
     pub fn to_vec4(&self) -> Vec4 {

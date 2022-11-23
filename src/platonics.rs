@@ -87,28 +87,8 @@ impl Platonics {
 
         let cube = vec![
             Vec3 {
-                x: 1_f32,
-                y: 1_f32,
-                z: 1_f32,
-            },
-            Vec3 {
-                x: -1_f32,
-                y: 1_f32,
-                z: 1_f32,
-            },
-            Vec3 {
-                x: 1_f32,
-                y: -1_f32,
-                z: 1_f32,
-            },
-            Vec3 {
                 x: -1_f32,
                 y: -1_f32,
-                z: 1_f32,
-            },
-            Vec3 {
-                x: 1_f32,
-                y: 1_f32,
                 z: -1_f32,
             },
             Vec3 {
@@ -118,13 +98,33 @@ impl Platonics {
             },
             Vec3 {
                 x: 1_f32,
+                y: 1_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: 1_f32,
                 y: -1_f32,
                 z: -1_f32,
             },
             Vec3 {
+                x: 1_f32,
+                y: 1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: -1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: 1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
                 x: -1_f32,
                 y: -1_f32,
-                z: -1_f32,
+                z: 1_f32,
             },
         ];
 
@@ -160,8 +160,8 @@ impl Platonics {
         for point in self.cube.iter() {
             // apply rotation
             let mut rotated_point = *point;
-            //rotated_point.rotate_x(self.rotation.x);
-            //rotated_point.rotate_y(self.rotation.y);
+            rotated_point.rotate_x(self.rotation.x);
+            rotated_point.rotate_y(self.rotation.y);
             rotated_point.rotate_z(self.rotation.z);
 
             transformed_3dpoints.push(rotated_point.add(&camera));
