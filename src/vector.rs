@@ -146,8 +146,9 @@ impl Vec3 {
     }    
 
     pub fn rotate_z(&mut self, angle: f32) {
-        self.x = self.x * angle.cos() - self.y * angle.sin();
-        self.y = self.x * angle.sin() + self.y * angle.cos();
+        self.x = (self.x * angle.cos()) - (self.y * angle.sin());
+        self.y = (self.x * angle.sin()) + (self.y * angle.cos());
+        //self.z = self.z;
     }
 
     pub fn to_vec4(&self) -> Vec4 {
