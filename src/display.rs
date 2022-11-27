@@ -310,6 +310,19 @@ impl Display {
         }
     }
 
+    pub fn put_sprite_ex(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect){
+        if let Some(texture) = self.sprites.get(name) {
+            self.canvas.copy_ex(
+                texture, 
+                Some(*src_rect), Some(*dst_rect), 
+                0_f64, 
+                //Some(sdl2::rect::Point::new(center_x, center_y)), 
+                None,
+                false, 
+                false).unwrap();
+        }
+    }
+
 
     pub fn project(&self, v: &Vec3) -> Vec2 {
         let fov_factor: f32 = 640.0; // TODO: calculate FOV from color buffer size

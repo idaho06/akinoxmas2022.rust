@@ -16,7 +16,7 @@ pub fn main() -> Result<(), String> {
 
     let mut scroller = Scroller::new(&mut display);
 
-    let mut platonics = Platonics::new();
+    let mut platonics = Platonics::new(&mut display);
 
     display.add_sprite("akinosoft", "./assets/akinosoft.png");
 
@@ -55,13 +55,13 @@ pub fn main() -> Result<(), String> {
 
         starfield.render(&mut display);
 
-        platonics.render(&mut display);
-
         display.color_buffer_to_canvas();
 
-        display.put_sprite("akinosoft", 0, 0, 0.5);
+        display.put_sprite("akinosoft", (display.w_width() as i32 / 2_i32) - 360_i32, 0, 0.33);
 
         scroller.render(&mut display);
+
+        platonics.render(&mut display);
 
         display.present_canvas();
 
