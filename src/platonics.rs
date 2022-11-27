@@ -20,7 +20,8 @@ pub struct Platonics {
 
 impl Platonics {
     pub fn new(display: &mut Display) -> Self {
-        display.add_sprite("particle02", "./assets/particle02.png");
+        //display.add_sprite("particle02", "./assets/particle02.png");
+        display.add_sprite("particle02", "./assets/ball.png");
         //let gr = ((1.0 + 5.0_f64.sqrt())/2.0) as f32;
 
         // clippy warning: calls to `push` immediately after creation
@@ -169,7 +170,7 @@ impl Platonics {
 
             self.transformed_3dpoints.push(rotated_point.add(&camera));
         }
-        self.transformed_3dpoints.sort_unstable_by(|l, r| l.z.total_cmp(&r.z)); // order 3dpoints by z after trasformation
+        self.transformed_3dpoints.sort_unstable_by(|l, r| r.z.total_cmp(&l.z)); // order 3dpoints by z after trasformation
 
         self.screen_points.truncate(0); //self.screen_points.clean();
         
@@ -178,6 +179,7 @@ impl Platonics {
             // project to screen space
             let mut point: Point = Point::new();
             point.v = display.project(transformed_3dpoint);
+            point.z = transformed_3dpoint.z;
             point.r = 255_u8;
             point.g = 255_u8;
             point.b = 255_u8;
@@ -191,7 +193,8 @@ impl Platonics {
             let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32; // TODO: change this to w_width and w_height
             let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
             //display.put_pixel(x, y, point.r, point.g, point.b);
-            display.put_sprite("particle02", x, y, 1.0_f32);
+            let size_factor = 3_f32 / point.z;
+            display.put_sprite_centered("particle02", x, y, size_factor);
         }
     }
 }

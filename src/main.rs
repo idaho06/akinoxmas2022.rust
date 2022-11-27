@@ -57,7 +57,7 @@ pub fn main() -> Result<(), String> {
 
         display.color_buffer_to_canvas();
 
-        display.put_sprite("akinosoft", (display.w_width() as i32 / 2_i32) - 360_i32, 0, 0.33);
+        display.put_sprite_centered("akinosoft", display.w_width() as i32 / 2_i32, 150, 0.33);
 
         scroller.render(&mut display);
 

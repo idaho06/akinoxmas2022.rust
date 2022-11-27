@@ -3,6 +3,7 @@ use crate::vector::Vec2;
 #[derive(Copy, Clone, Debug)]
 pub struct Point {
     pub v: Vec2,
+    pub z: f32,
     pub a: u8,
     pub r: u8,
     pub g: u8,
@@ -18,11 +19,12 @@ impl Default for Point {
 impl Point {
     pub fn new() -> Self {
         let v = Vec2 { x: 0.0, y: 0.0 };
+        let z = 0_f32;
         let a: u8 = 0xff;
         let r: u8 = 0x00;
         let g: u8 = 0x00;
         let b: u8 = 0x00;
-        Self { v, a, r, g, b }
+        Self { v, z, a, r, g, b }
     }
 
     pub fn color4b(&self) -> u32 {

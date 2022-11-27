@@ -276,6 +276,16 @@ impl Display {
         }
     }
 
+    pub fn put_sprite_centered(&mut self, name: &str, x: i32, y: i32, size_factor: f32) {
+        if let Some(texture) = self.sprites.get(name) {
+            let width = (texture.query().width as f32 * size_factor).round() as i32;
+            let height = (texture.query().height as f32 * size_factor).round() as i32;
+            let cx = x - width / 2;
+            let cy = y - height / 2;
+            self.canvas.copy(texture, None, Some(Rect::new(cx,cy,width as u32,height as u32))).unwrap()
+        }
+    }
+
     pub fn put_sprite_rect(&mut self, name: &str, x: i32, y: i32, rect: &Rect){
         // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
         /* 
