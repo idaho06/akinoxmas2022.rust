@@ -2,10 +2,11 @@ extern crate sdl2;
 
 use akinoxmas2022::platonics::Platonics;
 use akinoxmas2022::scroller::Scroller;
-use sdl2::event::Event;
-use sdl2::keyboard::Keycode;
 use akinoxmas2022::display::Display;
 use akinoxmas2022::starfield::Starfield;
+use akinoxmas2022::logo::Logo;
+use sdl2::event::Event;
+use sdl2::keyboard::Keycode;
 
 pub fn main() -> Result<(), String> {
     let mut display = Display::new();
@@ -18,7 +19,8 @@ pub fn main() -> Result<(), String> {
 
     let mut platonics = Platonics::new(&mut display);
 
-    display.add_sprite("akinosoft", "./assets/akinosoft.png");
+    //display.add_sprite("akinosoft", "./assets/akinosoft.png");
+    let mut logo = Logo::new(&mut display);
 
     let start = display.ticks();
     //let target_ticks_frame: u32 = 1000/60;
@@ -53,11 +55,14 @@ pub fn main() -> Result<(), String> {
 
         platonics.update(last_frame_delta, &display);
 
+        logo.update(last_frame_delta, &display);
+
         starfield.render(&mut display);
 
         display.color_buffer_to_canvas();
 
-        display.put_sprite_centered("akinosoft", display.w_width() as i32 / 2_i32, 150, 0.33);
+        logo.render(&mut display);
+        //display.put_sprite_centered("akinosoft", display.w_width() as i32 / 2_i32, 150, 0.33);
 
         scroller.render(&mut display);
 
