@@ -13,7 +13,7 @@ pub fn main() -> Result<(), String> {
     display.cls();
     let mut event_pump = display.event_pump();
 
-    let mut starfield = Starfield::new();
+    let mut starfield = Starfield::new(&mut display);
 
     let mut scroller = Scroller::new(&mut display);
 
@@ -47,8 +47,6 @@ pub fn main() -> Result<(), String> {
 
         display.cls();
 
-        display.clear_color_buffer(0, 0, 0);
-
         starfield.update(last_frame_delta, &display);
 
         scroller.update(last_frame_delta, &display);
@@ -57,9 +55,13 @@ pub fn main() -> Result<(), String> {
 
         logo.update(last_frame_delta, &display);
 
+        //display.clear_color_buffer(0, 0, 0);
+        //display.clear_streaming_buffer_named("starfield", 0, 0, 0);
+
         starfield.render(&mut display);
 
-        display.color_buffer_to_canvas();
+        //display.color_buffer_to_canvas();
+        //display.streaming_buffer_to_canvas_named("starfield");
 
         logo.render(&mut display);
         //display.put_sprite_centered("akinosoft", display.w_width() as i32 / 2_i32, 150, 0.33);

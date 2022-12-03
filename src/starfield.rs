@@ -8,14 +8,14 @@ pub struct Starfield {
     direction: Vec3,
 }
 
-impl Default for Starfield {
+/* impl Default for Starfield {
     fn default() -> Self {
         Self::new()
     }
-}
+} */
 
 impl Starfield {
-    pub fn new() -> Self {
+    pub fn new(display: &mut Display) -> Self {
         // Create a vector of random Vec3 in space between (-1.0, -1.0, -1,0) to (1.0, 1.0, 1.0)
         let num_stars: usize = 2000;
         let zero_vec = Vec3 {
@@ -32,6 +32,8 @@ impl Starfield {
             star.y = rng.gen_range(limits.0..limits.1);
             star.z = rng.gen_range(limits.0..limits.1);
         }
+
+        display.add_streaming_buffer("starfield", 640, 360);
 
         //println!("{:?}", stars);
 
@@ -124,11 +126,16 @@ impl Starfield {
 
     // render
     pub fn render(&self, display: &mut Display) {
+        display.clear_streaming_buffer("starfield", 0, 0, 0);
         let stars_2d = &self.screen_stars;
+        let width = display.streaming_buffer_width("starfield").unwrap();
+        let height = display.streaming_buffer_height("starfield").unwrap();
         for star in stars_2d.iter() {
-            let x: i32 = (star.v.x.round() + (display.t_width() as f32 / 2.0)) as i32;
-            let y: i32 = (star.v.y.round() + (display.t_height() as f32 / 2.0)) as i32;
-            display.put_pixel(x, y, star.r, star.g, star.b);
+            let x: i32 = (star.v.x.round() + (width as f32 / 2.0)) as i32;
+            let y: i32 = (star.v.y.round() + (height as f32 / 2.0)) as i32;
+            //display.put_pixel(x, y, star.r, star.g, star.b);
+            display.put_pixel("starfield", x, y, star.r, star.g, star.b);
         }
+        display.streaming_buffer_to_canvas("starfield");
     }
 }

@@ -4,18 +4,22 @@ use std::collections::HashMap;
 use std::ffi::c_void;
 
 use byte_slice_cast::AsMutSliceOf; // cast to a different type for slices u8->u32
-//use image::RgbaImage;
-use sdl2::rect::Rect;
-use sdl2::surface::Surface;
+                                   //use image::RgbaImage;
 use sdl2::pixels::{Color, PixelFormatEnum};
+use sdl2::rect::Rect;
 use sdl2::render::{Canvas, Texture};
+use sdl2::surface::Surface;
 use sdl2::video::Window;
 use sdl2::{EventPump, Sdl, TimerSubsystem};
 //use sdl2::rect::{Point, Rect};
 use sdl2::sys::{SDL_DisplayMode, SDL_GetCurrentDisplayMode};
 
-use crate::vector::{Vec3, Vec2};
+use crate::vector::{Vec2, Vec3};
 
+struct StreamingBuffer {
+    color_buffer: Box<[u8]>,
+    texture: Texture,
+}
 pub struct Display {
     sdl_context: Sdl,
     //video_subsystem: VideoSubsystem,
@@ -25,11 +29,14 @@ pub struct Display {
     //window: Window,
     canvas: Canvas<Window>,
     //texture_creator: TextureCreator<WindowContext>,
-    texture: Texture,
-    t_width: u32,
-    t_height: u32,
-    color_buffer: Box<[u8]>,
+    //texture: Texture,
+    //t_width: u32,
+    //t_height: u32,
+    //color_buffer: Box<[u8]>,
     sprites: HashMap<String, Texture>,
+    //color_buffers: HashMap<String, Box<[u8]>>,
+    //streaming_textures: HashMap<String, Texture>,
+    streaming_buffers: HashMap<String, StreamingBuffer>,
 }
 
 //clippy warning: you should consider adding a `Default` implementation for `Display`
@@ -63,7 +70,7 @@ impl Display {
         println!("Current display w: {} h: {}", dm.w, dm.h);
         //let w_width: u32 = dm.w as u32;
         //let w_height: u32 = dm.h as u32;
-        
+
         let w_width: u32 = 1920;
         let w_height: u32 = 1080;
         println!("Forcing display w: {} h: {}", w_width, w_height);
@@ -91,18 +98,18 @@ impl Display {
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
-        let texture_creator = canvas.texture_creator();
-        println!("Texture formats: {:?}", canvas.info().texture_formats);
+        //let texture_creator = canvas.texture_creator();
+        //println!("Texture formats: {:?}", canvas.info().texture_formats);
 
-        let t_width: u32 = w_width / 3;
-        let t_height: u32 = w_height / 3;
-        println!("t_w: {} t_h: {}", t_width, t_height);
+        //let t_width: u32 = w_width / 3;
+        //let t_height: u32 = w_height / 3;
+        //println!("t_w: {} t_h: {}", t_width, t_height);
 
-        let mut texture = texture_creator
-            .create_texture_streaming(PixelFormatEnum::ARGB8888, t_width, t_height)
-            .map_err(|e| e.to_string())
-            .unwrap();
-        texture.set_blend_mode(sdl2::render::BlendMode::Blend);
+        //let mut texture = texture_creator
+        //    .create_texture_streaming(PixelFormatEnum::ARGB8888, t_width, t_height)
+        //    .map_err(|e| e.to_string())
+        //    .unwrap();
+        //texture.set_blend_mode(sdl2::render::BlendMode::Blend);
         // Create a red-green gradient
         /* texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
             for y in 0..256 {
@@ -119,13 +126,13 @@ impl Display {
         //let pixel_data: Vec<u8> = vec![0; 1920*4*1080 as usize];
         //let mut pixel_data: [u8; 1920*4*1080 as usize] = [0; 1920*4*1080 as usize];
 
-        let mut pixel_data: Vec<u8> = Vec::with_capacity((t_width * 4 * t_height) as usize);
+        //let mut pixel_data: Vec<u8> = Vec::with_capacity((t_width * 4 * t_height) as usize);
 
-        for _offset in 0..(t_width * 4 * t_height) as usize {
-            pixel_data.push(0);
-        }
+        //for _offset in 0..(t_width * 4 * t_height) as usize {
+        //    pixel_data.push(0);
+        //}
 
-        let pixel_data = pixel_data.into_boxed_slice();
+        //let pixel_data = pixel_data.into_boxed_slice();
 
         //let mut pixel_data2 = RgbaImage::new(t_width, t_height);
         //let test = pixel_data2.into_raw().into_boxed_slice();
@@ -145,13 +152,16 @@ impl Display {
             //canvas: canvas,
             canvas,
             //texture: texture,
-            texture,
+            //texture,
             //t_width: t_width,
-            t_width,
+            //t_width,
             //t_height: t_height,
-            t_height,
-            color_buffer: pixel_data,
+            //t_height,
+            //color_buffer: pixel_data,
             sprites: HashMap::new(),
+            //color_buffers: HashMap::new(),
+            //streaming_textures: HashMap::new(),
+            streaming_buffers: HashMap::new(),
         }
     }
 
@@ -173,13 +183,13 @@ impl Display {
         self.timer.ticks()
     }
 
-    pub fn t_width(&self) -> u32 {
+    /* pub fn t_width(&self) -> u32 {
         self.t_width
-    }
+    } */
 
-    pub fn t_height(&self) -> u32 {
+    /* pub fn t_height(&self) -> u32 {
         self.t_height
-    }
+    } */
 
     pub fn w_height(&self) -> u32 {
         self.w_height
@@ -189,19 +199,18 @@ impl Display {
         self.w_width
     }
 
-
-    pub fn put_pixel_raw(&mut self, x: usize, y: usize, r: u8, g: u8, b: u8) {
+    /* pub fn put_pixel_raw(&mut self, x: usize, y: usize, r: u8, g: u8, b: u8) {
         let offset = (y * self.t_width as usize * 4) + (x * 4);
         self.color_buffer[offset] = b as u8; // blue
         self.color_buffer[offset + 1] = g as u8; // green
         self.color_buffer[offset + 2] = r as u8; // red
         self.color_buffer[offset + 3] = 255_u8;
         // clippy warning: casting integer literal to `u8` is unnecessary
-        //self.color_buffer[offset + 3] = 255 as u8; // ?? alpha but seems ignored */
-                                                   //canvas.draw_point(Point::new(x as i32, y as i32))?;
-    }
+        //self.color_buffer[offset + 3] = 255 as u8; // ?? alpha but seems ignored
+        //canvas.draw_point(Point::new(x as i32, y as i32))?;
+    } */
 
-    pub fn put_pixel(&mut self, x: i32, y: i32, r: u8, g: u8, b: u8) {
+    /* pub fn put_pixel(&mut self, x: i32, y: i32, r: u8, g: u8, b: u8) {
         if x < 0 || x > (self.t_width - 1) as i32 || y < 0 || y > (self.t_height - 1) as i32 {
             return;
         }
@@ -209,28 +218,125 @@ impl Display {
         let offset = ((y * self.t_width as i32) + (x)) as usize;
         let pixel_data_u32 = self.color_buffer.as_mut_slice_of::<u32>().unwrap();
         pixel_data_u32[offset] = color;
+    } */
+
+    pub fn put_pixel(&mut self, name: &str, x: i32, y: i32, r: u8, g: u8, b: u8) {
+        //if let Some(streaming_texture) = self.streaming_textures.get(name) {
+        //    if let Some(src_buffer) = self.color_buffers.get_mut(name) {
+        if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
+            let width = streaming_buffer.texture.query().width;
+            let height = streaming_buffer.texture.query().height;
+            if x < 0 || x > (width - 1) as i32 || y < 0 || y > (height - 1) as i32 {
+                return;
+            }
+            let color: u32 = u32::from_be_bytes([0xff, r, g, b]); //ARGB888
+            let offset = ((y * width as i32) + (x)) as usize;
+            let pixel_data_u32 = streaming_buffer
+                .color_buffer
+                .as_mut_slice_of::<u32>()
+                .unwrap();
+            pixel_data_u32[offset] = color;
+            //}
+        }
     }
 
-    pub fn clear_color_buffer(&mut self, r: u8, g: u8, b: u8) {
+    /* pub fn clear_color_buffer(&mut self, r: u8, g: u8, b: u8) {
         let color: u32 = u32::from_be_bytes([0x00, r, g, b]); //ARGB888
         let pixel_data_u32 = self.color_buffer.as_mut_slice_of::<u32>().unwrap();
         pixel_data_u32[..].fill(color);
+    } */
+
+    pub fn clear_streaming_buffer(&mut self, name: &str, r: u8, g: u8, b: u8) {
+        if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
+            let color: u32 = u32::from_be_bytes([0x00, r, g, b]); //ARGB888
+            let pixel_data_u32 = streaming_buffer
+                .color_buffer
+                .as_mut_slice_of::<u32>()
+                .unwrap();
+            pixel_data_u32[..].fill(color);
+        }
     }
 
-    pub fn color_buffer_to_canvas(&mut self) {
-         
+    pub fn add_streaming_buffer(&mut self, name: &str, width: usize, height: usize) {
+        let texture_creator = self.canvas.texture_creator();
+        let mut texture = texture_creator
+            .create_texture_streaming(PixelFormatEnum::ARGB8888, width as u32, height as u32)
+            .map_err(|e| e.to_string())
+            .unwrap();
+        texture.set_blend_mode(sdl2::render::BlendMode::Blend);
+
+        let mut pixel_data: Vec<u8> = Vec::with_capacity(width * 4 * height);
+
+        for _offset in 0..(width * 4 * height) {
+            pixel_data.push(0);
+        }
+
+        let pixel_data = pixel_data.into_boxed_slice();
+
+        self.streaming_buffers.insert(
+            name.to_string(),
+            StreamingBuffer {
+                color_buffer: pixel_data,
+                texture,
+            },
+        );
+    }
+
+    /*     pub fn add_color_buffer(&mut self, name: &str, width: usize, height: usize) {
+        let texture_creator = self.canvas.texture_creator();
+        let mut texture = texture_creator
+            .create_texture_streaming(PixelFormatEnum::ARGB8888, width as u32, height as u32)
+            .map_err(|e| e.to_string())
+            .unwrap();
+        texture.set_blend_mode(sdl2::render::BlendMode::Blend);
+
+        let mut pixel_data: Vec<u8> = Vec::with_capacity(width * 4 * height);
+
+        for _offset in 0..(width * 4 * height) {
+            pixel_data.push(0);
+        }
+
+        let pixel_data = pixel_data.into_boxed_slice();
+
+        self.color_buffers.insert(name.to_string(), pixel_data);
+        self.streaming_textures.insert(name.to_string(), texture);
+    } */
+
+    pub fn streaming_buffer_to_canvas(&mut self, name: &str) {
+        /* if let Some(streaming_texture) = self.streaming_textures.get_mut(name) {
+        if let Some(src_buffer) = self.color_buffers.get(name) { */
+        if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
+            streaming_buffer
+                .texture
+                //streaming_texture
+                .with_lock(None, |buffer: &mut [u8], _pitch: usize| {
+                    buffer.copy_from_slice(&streaming_buffer.color_buffer);
+                })
+                .unwrap();
+            /*
+            streaming_texture
+                .update(None, src_buffer, width as usize * 4).unwrap();
+            */
+            //}
+            self.canvas
+                .copy(&streaming_buffer.texture, None, None)
+                .unwrap();
+        }
+    }
+
+    /* pub fn color_buffer_to_canvas(&mut self) {
         self.texture
             .with_lock(None, |buffer: &mut [u8], _pitch: usize| {
                 buffer.copy_from_slice(&self.color_buffer);
             })
             .unwrap();
-        
-        /* 
+
+        /*
         self.texture
             .update(None, &self.color_buffer, self.t_width as usize * 4).unwrap();
         */
         self.canvas.copy(&self.texture, None, None).unwrap();
-    }
+    } */
 
     pub fn add_sprite(&mut self, name: &str, filename: &str) {
         let image_from_file = image::open(filename)
@@ -246,20 +352,43 @@ impl Display {
             buffer_for_sprite.push(image_pixel.0[3]); // alpha
         }
         let surface_for_sprite = Surface::from_data(
-            buffer_for_sprite.as_mut_slice(), 
-            image_from_file.width(), 
-            image_from_file.height(), 
-            image_from_file.width() * 4, 
-            PixelFormatEnum::ARGB8888).unwrap();      
+            buffer_for_sprite.as_mut_slice(),
+            image_from_file.width(),
+            image_from_file.height(),
+            image_from_file.width() * 4,
+            PixelFormatEnum::ARGB8888,
+        )
+        .unwrap();
         let texture_creator = self.canvas.texture_creator();
         self.sprites.insert(
-            name.to_string(), 
-            texture_creator.create_texture_from_surface(surface_for_sprite).unwrap());
+            name.to_string(),
+            texture_creator
+                .create_texture_from_surface(surface_for_sprite)
+                .unwrap(),
+        );
+    }
+
+    pub fn streaming_buffer_width(&self, name: &str) -> Result<u32, String> {
+        //let width;
+        if let Some(streaming_buffer) = self.streaming_buffers.get(name) {
+            Ok(streaming_buffer.texture.query().width)
+        } else {
+            Err("No such streaming_buffer".to_string())
+        }
+    }
+
+    pub fn streaming_buffer_height(&self, name: &str) -> Result<u32, String> {
+        //let width;
+        if let Some(streaming_buffer) = self.streaming_buffers.get(name) {
+            Ok(streaming_buffer.texture.query().height)
+        } else {
+            Err("No such streaming_buffer".to_string())
+        }
     }
 
     pub fn put_sprite(&mut self, name: &str, x: i32, y: i32, size_factor: f32) {
         // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
-        /* 
+        /*
         match self.sprites.get(name) {
             Some(texture) => {
                 let width = (texture.query().width as f32 * size_factor) as u32;
@@ -272,7 +401,9 @@ impl Display {
         if let Some(texture) = self.sprites.get(name) {
             let width = (texture.query().width as f32 * size_factor) as u32;
             let height = (texture.query().height as f32 * size_factor) as u32;
-            self.canvas.copy(texture, None, Some(Rect::new(x,y,width,height))).unwrap()
+            self.canvas
+                .copy(texture, None, Some(Rect::new(x, y, width, height)))
+                .unwrap()
         }
     }
 
@@ -282,13 +413,19 @@ impl Display {
             let height = (texture.query().height as f32 * size_factor).round() as i32;
             let cx = x - width / 2;
             let cy = y - height / 2;
-            self.canvas.copy(texture, None, Some(Rect::new(cx,cy,width as u32,height as u32))).unwrap()
+            self.canvas
+                .copy(
+                    texture,
+                    None,
+                    Some(Rect::new(cx, cy, width as u32, height as u32)),
+                )
+                .unwrap()
         }
     }
 
-    pub fn put_sprite_rect(&mut self, name: &str, x: i32, y: i32, rect: &Rect){
+    pub fn put_sprite_rect(&mut self, name: &str, x: i32, y: i32, rect: &Rect) {
         // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
-        /* 
+        /*
         match self.sprites.get(name) {
             Some(texture) => {
                 let src = *rect;
@@ -300,14 +437,14 @@ impl Display {
         */
         if let Some(texture) = self.sprites.get(name) {
             let src = *rect;
-            let dest = Rect::new(x,y,rect.width(),rect.height());
+            let dest = Rect::new(x, y, rect.width(), rect.height());
             self.canvas.copy(texture, Some(src), Some(dest)).unwrap()
         }
     }
 
-    pub fn put_sprite_rect_rect(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect){
+    pub fn put_sprite_rect_rect(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect) {
         // clippy warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
-        /* 
+        /*
         match self.sprites.get(name) {
             Some(texture) => {
                 self.canvas.copy(texture, Some(*src_rect), Some(*dst_rect)).unwrap()
@@ -316,29 +453,34 @@ impl Display {
         }
         */
         if let Some(texture) = self.sprites.get(name) {
-            self.canvas.copy(texture, Some(*src_rect), Some(*dst_rect)).unwrap()
+            self.canvas
+                .copy(texture, Some(*src_rect), Some(*dst_rect))
+                .unwrap()
         }
     }
 
-    pub fn put_sprite_ex(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect){
+    pub fn put_sprite_ex(&mut self, name: &str, src_rect: &Rect, dst_rect: &Rect) {
         if let Some(texture) = self.sprites.get(name) {
-            self.canvas.copy_ex(
-                texture, 
-                Some(*src_rect), Some(*dst_rect), 
-                0_f64, 
-                //Some(sdl2::rect::Point::new(center_x, center_y)), 
-                None,
-                false, 
-                false).unwrap();
+            self.canvas
+                .copy_ex(
+                    texture,
+                    Some(*src_rect),
+                    Some(*dst_rect),
+                    0_f64,
+                    //Some(sdl2::rect::Point::new(center_x, center_y)),
+                    None,
+                    false,
+                    false,
+                )
+                .unwrap();
         }
     }
-
 
     pub fn project(&self, v: &Vec3) -> Vec2 {
         let fov_factor: f32 = 640.0; // TODO: calculate FOV from color buffer size
-        Vec2 { 
-            x: (fov_factor * v.x) / v.z , 
-            y: (fov_factor * -v.y) / v.z ,
+        Vec2 {
+            x: (fov_factor * v.x) / v.z,
+            y: (fov_factor * -v.y) / v.z,
         }
     }
 }
