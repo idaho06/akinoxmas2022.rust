@@ -490,11 +490,11 @@ impl Display {
         if i0 == i1 {
             return vec![(i0,d0)]
         }
-        let distance = (i1-i0).abs() as usize;
-        let mut values: Vec<(i32,i32)> = Vec::with_capacity(distance);
+        let distance = (i1-i0).unsigned_abs(); // clippy change as usize to .unsigned_abs()
+        let mut values: Vec<(i32,i32)> = Vec::with_capacity(distance.try_into().unwrap()); // clippy convert to usize and panic in case of error
         let mut a: f32 = (d1 as f32 - d0 as f32) / (i1 as f32 - i0 as f32);
-        let step:i32;
-        if i1 > i0 { step = 1; } else {step = -1;}
+        // clippy warning: unneeded late initialization
+        let step:i32 = if i1 > i0 { 1 } else { -1 };
         if step == -1 {a = -a;} // change sign of a if we are going backwards
         let mut i = i0;
         let mut d = d0 as f32;
