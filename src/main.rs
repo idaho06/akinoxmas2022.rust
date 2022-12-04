@@ -5,6 +5,7 @@ use akinoxmas2022::scroller::Scroller;
 use akinoxmas2022::display::Display;
 use akinoxmas2022::starfield::Starfield;
 use akinoxmas2022::logo::Logo;
+use akinoxmas2022::vector::Vec2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -31,7 +32,7 @@ pub fn main() -> Result<(), String> {
 
     //display.clear_color_buffer(0, 0, 0);
 
-    display.add_streaming_buffer("test", 320, 200);
+    display.add_streaming_buffer("test", 320, 180);
 
     'running: loop {
         frame_time = display.ticks();
@@ -75,6 +76,12 @@ pub fn main() -> Result<(), String> {
         display.clear_streaming_buffer("test", 0, 0, 0);
 
         display.line("test", 320, 200, 0, 0, 255, 255, 255);
+        display.filled_triangle(
+            "test", 
+            &Vec2{x: 30.0, y: -10.0}, 
+            &Vec2{x: 50.0, y: 100.0}, 
+            &Vec2{x: -20.0, y: 50.0}, 
+            255, 0, 0);
 
         display.streaming_buffer_to_canvas("test");
 

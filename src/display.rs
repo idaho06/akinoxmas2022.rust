@@ -485,22 +485,24 @@ impl Display {
     }
 
     // i = interval. Always change in +1 or -1 steps
-    // d = displacement. Fractional increment, rounded to integer. 
-    fn interpolate_int(&self, i0: i32, d0:i32, i1:i32, d1:i32) -> Vec<(i32,i32)> {
+    // d = displacement. Fractional increment, rounded to integer.
+    fn interpolate_int(&self, i0: i32, d0: i32, i1: i32, d1: i32) -> Vec<(i32, i32)> {
         if i0 == i1 {
-            return vec![(i0,d0)]
+            return vec![(i0, d0)];
         }
-        let distance = (i1-i0).unsigned_abs(); // clippy change as usize to .unsigned_abs()
-        let mut values: Vec<(i32,i32)> = Vec::with_capacity(distance.try_into().unwrap()); // clippy convert to usize and panic in case of error
+        let distance = (i1 - i0).unsigned_abs(); // clippy change as usize to .unsigned_abs()
+        let mut values: Vec<(i32, i32)> = Vec::with_capacity(distance.try_into().unwrap()); // clippy convert to usize and panic in case of error
         let mut a: f32 = (d1 as f32 - d0 as f32) / (i1 as f32 - i0 as f32);
         // clippy warning: unneeded late initialization
-        let step:i32 = if i1 > i0 { 1 } else { -1 };
-        if step == -1 {a = -a;} // change sign of a if we are going backwards
+        let step: i32 = if i1 > i0 { 1 } else { -1 };
+        if step == -1 {
+            a = -a;
+        } // change sign of a if we are going backwards
         let mut i = i0;
         let mut d = d0 as f32;
         loop {
-            values.push((i,d.round() as i32));
-            
+            values.push((i, d.round() as i32));
+
             d += a;
             i += step;
 
@@ -510,10 +512,9 @@ impl Display {
             if step == -1 && i < i1 {
                 break;
             }
-        };
+        }
 
         values
-        
     }
 
     pub fn line(&mut self, name: &str, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
@@ -522,14 +523,72 @@ impl Display {
 
         if dx.abs() > dy.abs() {
             // horizontal-ish
-            for (x,y) in self.interpolate_int(x0, y0, x1, y1).iter(){
+            for (x, y) in self.interpolate_int(x0, y0, x1, y1).iter() {
                 self.put_pixel(name, *x, *y, r, g, b);
             }
         } else {
             // vertical-ish
-            for (y,x) in self.interpolate_int(y0, x0, y1, x1).iter(){
+            for (y, x) in self.interpolate_int(y0, x0, y1, x1).iter() {
                 self.put_pixel(name, *x, *y, r, g, b);
             }
         }
+    }
+
+    pub fn filled_triangle(
+        &mut self,
+        name: &str,
+        point0: &Vec2,
+        point1: &Vec2,
+        point2: &Vec2,
+        r: u8,
+        g: u8,
+        b: u8,
+    ) {
+        let mut v0 = *point0;
+        let mut v1 = *point1;
+        let mut v2 = *point2;
+
+        // order the vertices by the y
+        if v1.y < v0.y {
+            (v0, v1) = (v1, v0);
+        }
+        if v2.y < v0.y {
+            (v0, v2) = (v2, v0);
+        }
+        if v2.y < v1.y {
+            (v1, v2) = (v2, v1);
+        }
+
+        // floats to integers
+        let y0 = v0.y.round() as i32;
+        let x0 = v0.x.round() as i32;
+        let y1 = v1.y.round() as i32;
+        let x1 = v1.x.round() as i32;
+        let y2 = v2.y.round() as i32;
+        let x2 = v2.x.round() as i32;
+
+        // get lines of the edges of the triangles
+        // we assume v0 to v2 is the longest edge (in the y scale)
+        let edge0 = self.interpolate_int(y0, x0, y2, x2); //v0 to v2, longest
+        let mut edge1 = self.interpolate_int(y0, x0, y1, x1); // v0 to v1
+        let mut edge2 = self.interpolate_int(y1, x1, y2, x2); // v1 to v2
+
+        // join the two short edges into one. Remove the last element of the first edge and then concatenate
+        edge1.pop();
+        edge1.append(&mut edge2);
+
+        // at this point, edge0 is the (y, x) line from top to bottom vertices
+        // edge1 is the (y, x) lines from top to midle to bottom vertices
+
+        // now we zip the two edges to define the horizontal lines that builds the triangle
+        /*
+        let triangle_iter = edge0.iter().zip(edge1.iter());
+        for ((y0,x0),(y1, x1)) in triangle_iter {
+            self.line(name, *x0, *y0, *x1, *y1, r, g, b);
+        } */
+        edge0
+            .iter()
+            .zip(edge1.iter())
+            .for_each(|((y0, x0), (y1, x1))| self.line(name, *x0, *y0, *x1, *y1, r, g, b));
     }
 }
