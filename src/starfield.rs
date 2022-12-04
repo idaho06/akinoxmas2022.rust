@@ -17,7 +17,7 @@ pub struct Starfield {
 impl Starfield {
     pub fn new(display: &mut Display) -> Self {
         // Create a vector of random Vec3 in space between (-1.0, -1.0, -1,0) to (1.0, 1.0, 1.0)
-        let num_stars: usize = 2000;
+        let num_stars: usize = 4000;
         let zero_vec = Vec3 {
             x: 0.0,
             y: 0.0,
