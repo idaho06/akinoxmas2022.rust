@@ -523,14 +523,20 @@ impl Display {
 
         if dx.abs() > dy.abs() {
             // horizontal-ish
-            for (x, y) in self.interpolate_int(x0, y0, x1, y1).iter() {
+            /* for (x, y) in self.interpolate_int(x0, y0, x1, y1).iter() {
                 self.put_pixel(name, *x, *y, r, g, b);
-            }
+            } */
+            self.interpolate_int(x0, y0, x1, y1)
+                .iter()
+                .for_each(|(x, y)| self.put_pixel(name, *x, *y, r, g, b));
         } else {
             // vertical-ish
-            for (y, x) in self.interpolate_int(y0, x0, y1, x1).iter() {
+            /* for (y, x) in self.interpolate_int(y0, x0, y1, x1).iter() {
                 self.put_pixel(name, *x, *y, r, g, b);
-            }
+            } */
+            self.interpolate_int(y0, x0, y1, x1)
+                .iter()
+                .for_each(|(y, x)| self.put_pixel(name, *x, *y, r, g, b));
         }
     }
 
