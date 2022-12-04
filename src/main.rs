@@ -31,6 +31,8 @@ pub fn main() -> Result<(), String> {
 
     //display.clear_color_buffer(0, 0, 0);
 
+    display.add_streaming_buffer("test", 320, 200);
+
     'running: loop {
         frame_time = display.ticks();
         // check input
@@ -69,6 +71,12 @@ pub fn main() -> Result<(), String> {
         scroller.render(&mut display);
 
         platonics.render(&mut display);
+
+        display.clear_streaming_buffer("test", 0, 0, 0);
+
+        display.line("test", 320, 200, 0, 0, 255, 255, 255);
+
+        display.streaming_buffer_to_canvas("test");
 
         display.present_canvas();
 

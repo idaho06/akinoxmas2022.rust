@@ -483,4 +483,53 @@ impl Display {
             y: (fov_factor * -v.y) / v.z,
         }
     }
+
+    // i = interval. Always change in +1 or -1 steps
+    // d = displacement. Fractional increment, rounded to integer. 
+    fn interpolate_int(&self, i0: i32, d0:i32, i1:i32, d1:i32) -> Vec<(i32,i32)> {
+        if i0 == i1 {
+            return vec![(i0,d0)]
+        }
+        let distance = (i1-i0).abs() as usize;
+        let mut values: Vec<(i32,i32)> = Vec::with_capacity(distance);
+        let mut a: f32 = (d1 as f32 - d0 as f32) / (i1 as f32 - i0 as f32);
+        let step:i32;
+        if i1 > i0 { step = 1; } else {step = -1;}
+        if step == -1 {a = -a;} // change sign of a if we are going backwards
+        let mut i = i0;
+        let mut d = d0 as f32;
+        loop {
+            values.push((i,d.round() as i32));
+            
+            d += a;
+            i += step;
+
+            if step == 1 && i > i1 {
+                break;
+            }
+            if step == -1 && i < i1 {
+                break;
+            }
+        };
+
+        values
+        
+    }
+
+    pub fn line(&mut self, name: &str, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
+        let dx = x1 - x0;
+        let dy = y1 - y0;
+
+        if dx.abs() > dy.abs() {
+            // horizontal-ish
+            for (x,y) in self.interpolate_int(x0, y0, x1, y1).iter(){
+                self.put_pixel(name, *x, *y, r, g, b);
+            }
+        } else {
+            // vertical-ish
+            for (y,x) in self.interpolate_int(y0, x0, y1, x1).iter(){
+                self.put_pixel(name, *x, *y, r, g, b);
+            }
+        }
+    }
 }
