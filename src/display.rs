@@ -1,6 +1,7 @@
 extern crate sdl2;
 
-use std::collections::HashMap;
+//use std::collections::HashMap;
+use rustc_hash::FxHashMap; // fast hashmap
 use std::ffi::c_void;
 
 use byte_slice_cast::AsMutSliceOf; // cast to a different type for slices u8->u32
@@ -33,10 +34,10 @@ pub struct Display {
     //t_width: u32,
     //t_height: u32,
     //color_buffer: Box<[u8]>,
-    sprites: HashMap<String, Texture>,
+    sprites: FxHashMap<String, Texture>,
     //color_buffers: HashMap<String, Box<[u8]>>,
     //streaming_textures: HashMap<String, Texture>,
-    streaming_buffers: HashMap<String, StreamingBuffer>,
+    streaming_buffers: FxHashMap<String, StreamingBuffer>,
 }
 
 //clippy warning: you should consider adding a `Default` implementation for `Display`
@@ -158,10 +159,10 @@ impl Display {
             //t_height: t_height,
             //t_height,
             //color_buffer: pixel_data,
-            sprites: HashMap::new(),
+            sprites: FxHashMap::default(),
             //color_buffers: HashMap::new(),
             //streaming_textures: HashMap::new(),
-            streaming_buffers: HashMap::new(),
+            streaming_buffers: FxHashMap::default(),
         }
     }
 
