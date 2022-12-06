@@ -5,6 +5,7 @@ use akinoxmas2022::scroller::Scroller;
 use akinoxmas2022::display::Display;
 use akinoxmas2022::starfield::Starfield;
 use akinoxmas2022::logo::Logo;
+use akinoxmas2022::torus::Torus;
 use akinoxmas2022::vector::Vec2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -23,6 +24,8 @@ pub fn main() -> Result<(), String> {
     //display.add_sprite("akinosoft", "./assets/akinosoft.png");
     let mut logo = Logo::new(&mut display);
 
+    let mut torus = Torus::new(&mut display);
+
     let start = display.ticks();
     //let target_ticks_frame: u32 = 1000/60;
     let mut frame_time: u32;
@@ -31,8 +34,6 @@ pub fn main() -> Result<(), String> {
     let mut frames: usize = 0;
 
     //display.clear_color_buffer(0, 0, 0);
-
-    display.add_streaming_buffer("test", 320, 180);
 
     'running: loop {
         frame_time = display.ticks();
@@ -58,32 +59,19 @@ pub fn main() -> Result<(), String> {
 
         logo.update(last_frame_delta, &display);
 
+        torus.update(last_frame_delta, &display);
+
         //display.clear_color_buffer(0, 0, 0);
-        //display.clear_streaming_buffer_named("starfield", 0, 0, 0);
 
         starfield.render(&mut display);
 
-        //display.color_buffer_to_canvas();
-        //display.streaming_buffer_to_canvas_named("starfield");
-
-        logo.render(&mut display);
-        //display.put_sprite_centered("akinosoft", display.w_width() as i32 / 2_i32, 150, 0.33);
+        //logo.render(&mut display);
 
         scroller.render(&mut display);
 
-        platonics.render(&mut display);
+        //platonics.render(&mut display);
 
-        display.clear_streaming_buffer("test", 0, 0, 0);
-
-        display.line("test", 320, 200, 0, 0, 255, 255, 255);
-        display.filled_triangle(
-            "test", 
-            &Vec2{x: 30.0, y: -10.0}, 
-            &Vec2{x: 50.0, y: 100.0}, 
-            &Vec2{x: -20.0, y: 50.0}, 
-            255, 0, 0);
-
-        display.streaming_buffer_to_canvas("test");
+        torus.render(&mut display);
 
         display.present_canvas();
 

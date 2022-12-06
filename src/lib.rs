@@ -12,6 +12,8 @@ pub mod point;
 pub mod scroller;
 pub mod platonics;
 pub mod logo;
+pub mod triangle;
+pub mod torus;
 
 /* 
 fn posterize(min: f32, max: f32, value: f32) -> u8 {
