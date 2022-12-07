@@ -243,7 +243,8 @@ impl Display {
     //     }
     // }
 
-    pub fn put_pixel_queue(&mut self, name: &str, pixel_queue: &Vec<Pixel>) {
+    // clippy warning: writing `&Vec` instead of `&[_]` involves a new object where a slice will do
+    pub fn put_pixel_queue(&mut self, name: &str, pixel_queue: &[Pixel]) { // replaced "&Vec<Pixel>" with "&[Pixel]" ==> huge performance gain!!
         if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
             let width = streaming_buffer.texture.query().width;
             let height = streaming_buffer.texture.query().height;
@@ -255,7 +256,7 @@ impl Display {
                 let g = pixel.g;
                 let b = pixel.b;
                 if x < 0 || x > (width - 1) as i32 || y < 0 || y > (height - 1) as i32 {
-                    ()
+                    //()
                 } else {
                     let color: u32 = u32::from_be_bytes([a, r, g, b]); //ARGB888
                     let offset = ((y * width as i32) + (x)) as usize;

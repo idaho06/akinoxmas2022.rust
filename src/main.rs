@@ -65,11 +65,11 @@ pub fn main() -> Result<(), String> {
 
         starfield.render(&mut display);
 
-        logo.render(&mut display);
+        //logo.render(&mut display);
 
-        scroller.render(&mut display);
+        //scroller.render(&mut display);
 
-        platonics.render(&mut display);
+        //platonics.render(&mut display);
 
         torus.render(&mut display);
 
