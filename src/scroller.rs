@@ -22,13 +22,19 @@ impl Scroller {
         let char_map = Self::create_char_map();
         let message = 
 "¡Este es un mensaje de AkinoSoft al mundo!
- ¡AkinoPower! Las demos de navidad mas cutres de la demoscene.
+ ¡AkinoPoder! Las demos de navidad mas cutres de la demoscene.
  ¿No conoces al grupo AkinoSoft? Somos los mejores coders, preventas,
  ilustradores y administradores de sistemas que han existido. 
  Somos ricos y guapos, como jodidas estrellas de rock.
  ¡FELIZ NAVIDAD CABRONES!
- Saludos a mis coleguitas Ikky, Palo, Rx, Lethe y Po.
- Besitos a mis amores Marta, Raquel y Ester."
+ Saludos a mis coleguitas Ikky, Po, Rx, Fabi, Lethe y Palo.
+ Por las redes estan: @ruben3d, @itorres@xin.cat, @PalomoGarron,
+ @frikivetusto, @Rheovarn, @Rober_dcm, @ouros, @LordTaishi, @gerarw,
+ @TamL46, @Qetu, @Titonosfe, @Rivudo, @ikkante, @pedro_ru_mo, @kanotson,
+ @DavidBokeh, @reemplazable. 
+ Besitos a mis amores Marta, Raquel y Ester.
+ Code: @idaho06 Gfx: @ikkante Music: Fabi
+ --( Pulsa ESC para salir )--"
             .replace('\n', "");
         let message_len = message.chars().count();
         // Populate the string message
@@ -140,16 +146,16 @@ impl Scroller {
         char_map.insert('-'.to_string(), Rect::new(768, 469, 68, 254));
         char_map.insert('.'.to_string(), Rect::new(1026, 469, 42, 254));
         char_map.insert('/'.to_string(), Rect::new(1228, 469, 96, 254));
-        // char_map.insert('0'.to_string(), Rect::new(144, 140, 57, 100));
-        // char_map.insert('1'.to_string(), Rect::new(221, 140, 57, 100));
-        // char_map.insert('2'.to_string(), Rect::new(298, 140, 57, 100));
-        // char_map.insert('3'.to_string(), Rect::new(375, 140, 57, 100));
-        // char_map.insert('4'.to_string(), Rect::new(452, 140, 57, 100));
-        // char_map.insert('5'.to_string(), Rect::new(529, 140, 57, 100));
-        // char_map.insert('6'.to_string(), Rect::new(606, 140, 57, 100));
-        // char_map.insert('7'.to_string(), Rect::new(683, 140, 57, 100));
-        // char_map.insert('8'.to_string(), Rect::new(760, 140, 57, 100));
-        // char_map.insert('9'.to_string(), Rect::new(837, 140, 57, 100));
+        char_map.insert('0'.to_string(), Rect::new(753, 3220, 147, 254));
+        char_map.insert('1'.to_string(), Rect::new(1030, 3220, 66, 254));
+        char_map.insert('2'.to_string(), Rect::new(1245, 3220, 92, 254));
+        char_map.insert('3'.to_string(), Rect::new(1481, 3220, 94, 254));
+        char_map.insert('4'.to_string(), Rect::new(1718, 3220, 94, 254));
+        char_map.insert('5'.to_string(), Rect::new(67, 3535, 81, 254));
+        char_map.insert('6'.to_string(), Rect::new(322, 3535, 81, 254));
+        char_map.insert('7'.to_string(), Rect::new(548, 3535, 79, 254));
+        char_map.insert('8'.to_string(), Rect::new(785, 3535, 78, 254));
+        char_map.insert('9'.to_string(), Rect::new(1023, 3535, 85, 254));
         char_map.insert(':'.to_string(), Rect::new(91, 772, 54, 254));
         char_map.insert(';'.to_string(), Rect::new(323, 772, 61, 254));
         // char_map.insert('<'.to_string(), Rect::new(20, 260, 69, 100));
@@ -187,7 +193,7 @@ impl Scroller {
         char_map.insert('\\'.to_string(), Rect::new(1039, 170, 62, 254));
         // char_map.insert(']'.to_string(), Rect::new(769, 500, 43, 100));
         // char_map.insert('^'.to_string(), Rect::new(832, 500, 69, 100));
-        // char_map.insert('_'.to_string(), Rect::new(921, 500, 63, 100));
+        char_map.insert('_'.to_string(), Rect::new(1263, 3535, 71, 254));
         // char_map.insert('`'.to_string(), Rect::new(20, 620, 57, 100));
         char_map.insert('a'.to_string(), Rect::new(1700, 1703, 120, 254));
         char_map.insert('b'.to_string(), Rect::new(47, 2013, 86, 254));

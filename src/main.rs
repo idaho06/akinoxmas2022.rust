@@ -67,11 +67,11 @@ pub fn main() -> Result<(), String> {
 
         //logo.render(&mut display);
 
-        //scroller.render(&mut display);
+        scroller.render(&mut display);
 
         //platonics.render(&mut display);
 
-        torus.render(&mut display);
+        //torus.render(&mut display);
 
         display.present_canvas();
 
