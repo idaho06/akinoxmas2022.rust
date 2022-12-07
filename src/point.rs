@@ -1,6 +1,16 @@
 use crate::vector::Vec2;
 
 #[derive(Copy, Clone, Debug)]
+pub struct Pixel {
+    pub x: i32,
+    pub y: i32,
+    pub a: u8,
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+}
+
+#[derive(Copy, Clone, Debug)]
 pub struct Point {
     pub v: Vec2,
     pub z: f32,

@@ -69,6 +69,10 @@ impl Vec2 {
 }
 
 impl Vec3 {
+    pub fn new() -> Self {
+        Self { x: 0_f32, y: 0_f32, z: 0_f32 }
+    }
+
     pub fn lenght(&self) -> f32 {
         ((self.x * self.x) + (self.y * self.y) + (self.z * self.z)).sqrt()
     }

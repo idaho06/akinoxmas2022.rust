@@ -15,12 +15,14 @@ use sdl2::{EventPump, Sdl, TimerSubsystem};
 //use sdl2::rect::{Point, Rect};
 use sdl2::sys::{SDL_DisplayMode, SDL_GetCurrentDisplayMode};
 
+use crate::point::Pixel;
 use crate::vector::{Vec2, Vec3};
 
 struct StreamingBuffer {
     color_buffer: Box<[u8]>,
     texture: Texture,
 }
+
 pub struct Display {
     sdl_context: Sdl,
     //video_subsystem: VideoSubsystem,
@@ -221,23 +223,49 @@ impl Display {
         pixel_data_u32[offset] = color;
     } */
 
-    pub fn put_pixel(&mut self, name: &str, x: i32, y: i32, r: u8, g: u8, b: u8) {
-        //if let Some(streaming_texture) = self.streaming_textures.get(name) {
-        //    if let Some(src_buffer) = self.color_buffers.get_mut(name) {
+    // pub fn put_pixel(&mut self, name: &str, x: i32, y: i32, r: u8, g: u8, b: u8) {
+    //     //if let Some(streaming_texture) = self.streaming_textures.get(name) {
+    //     //    if let Some(src_buffer) = self.color_buffers.get_mut(name) {
+    //     if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
+    //         let width = streaming_buffer.texture.query().width;
+    //         let height = streaming_buffer.texture.query().height;
+    //         if x < 0 || x > (width - 1) as i32 || y < 0 || y > (height - 1) as i32 {
+    //             return;
+    //         }
+    //         let color: u32 = u32::from_be_bytes([0xff, r, g, b]); //ARGB888
+    //         let offset = ((y * width as i32) + (x)) as usize;
+    //         let pixel_data_u32 = streaming_buffer
+    //             .color_buffer
+    //             .as_mut_slice_of::<u32>()
+    //             .unwrap();
+    //         pixel_data_u32[offset] = color;
+    //         //}
+    //     }
+    // }
+
+    pub fn put_pixel_queue(&mut self, name: &str, pixel_queue: &Vec<Pixel>) {
         if let Some(streaming_buffer) = self.streaming_buffers.get_mut(name) {
             let width = streaming_buffer.texture.query().width;
             let height = streaming_buffer.texture.query().height;
-            if x < 0 || x > (width - 1) as i32 || y < 0 || y > (height - 1) as i32 {
-                return;
-            }
-            let color: u32 = u32::from_be_bytes([0xff, r, g, b]); //ARGB888
-            let offset = ((y * width as i32) + (x)) as usize;
-            let pixel_data_u32 = streaming_buffer
-                .color_buffer
-                .as_mut_slice_of::<u32>()
-                .unwrap();
-            pixel_data_u32[offset] = color;
-            //}
+            pixel_queue.iter().for_each(|pixel| {
+                let x = pixel.x;
+                let y = pixel.y;
+                let a = pixel.a;
+                let r = pixel.r;
+                let g = pixel.g;
+                let b = pixel.b;
+                if x < 0 || x > (width - 1) as i32 || y < 0 || y > (height - 1) as i32 {
+                    ()
+                } else {
+                    let color: u32 = u32::from_be_bytes([a, r, g, b]); //ARGB888
+                    let offset = ((y * width as i32) + (x)) as usize;
+                    let pixel_data_u32 = streaming_buffer
+                        .color_buffer
+                        .as_mut_slice_of::<u32>()
+                        .unwrap();
+                    pixel_data_u32[offset] = color;
+                }
+            });
         }
     }
 
@@ -410,8 +438,8 @@ impl Display {
 
     pub fn put_sprite_centered(&mut self, name: &str, x: i32, y: i32, size_factor: f32) {
         if let Some(texture) = self.sprites.get(name) {
-            let width = (texture.query().width as f32 * size_factor).round() as i32;
-            let height = (texture.query().height as f32 * size_factor).round() as i32;
+            let width = (texture.query().width as f32 * size_factor) as i32;
+            let height = (texture.query().height as f32 * size_factor) as i32;
             let cx = x - width / 2;
             let cy = y - height / 2;
             self.canvas
@@ -502,7 +530,7 @@ impl Display {
         let mut i = i0;
         let mut d = d0 as f32;
         loop {
-            values.push((i, d.round() as i32));
+            values.push((i, d as i32));
 
             d += a;
             i += step;
@@ -518,7 +546,30 @@ impl Display {
         values
     }
 
-    pub fn line(&mut self, name: &str, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
+    // pub fn line(&mut self, name: &str, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
+    //     let dx = x1 - x0;
+    //     let dy = y1 - y0;
+
+    //     if dx.abs() > dy.abs() {
+    //         // horizontal-ish
+    //         /* for (x, y) in self.interpolate_int(x0, y0, x1, y1).iter() {
+    //             self.put_pixel(name, *x, *y, r, g, b);
+    //         } */
+    //         self.interpolate_int(x0, y0, x1, y1)
+    //             .iter()
+    //             .for_each(|(x, y)| self.put_pixel(name, *x, *y, r, g, b));
+    //     } else {
+    //         // vertical-ish
+    //         /* for (y, x) in self.interpolate_int(y0, x0, y1, x1).iter() {
+    //             self.put_pixel(name, *x, *y, r, g, b);
+    //         } */
+    //         self.interpolate_int(y0, x0, y1, x1)
+    //             .iter()
+    //             .for_each(|(y, x)| self.put_pixel(name, *x, *y, r, g, b));
+    //     }
+    // }
+
+    pub fn line_queue(&self, queue: &mut Vec<Pixel>, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
         let dx = x1 - x0;
         let dy = y1 - y0;
 
@@ -529,7 +580,16 @@ impl Display {
             } */
             self.interpolate_int(x0, y0, x1, y1)
                 .iter()
-                .for_each(|(x, y)| self.put_pixel(name, *x, *y, r, g, b));
+                .for_each(|(x, y)| 
+                    //self.put_pixel(name, *x, *y, r, g, b)
+                    queue.push(Pixel { 
+                        x: *x, 
+                        y: *y, 
+                        a: 255_u8, 
+                        r, 
+                        g, 
+                        b, })
+                );
         } else {
             // vertical-ish
             /* for (y, x) in self.interpolate_int(y0, x0, y1, x1).iter() {
@@ -537,13 +597,98 @@ impl Display {
             } */
             self.interpolate_int(y0, x0, y1, x1)
                 .iter()
-                .for_each(|(y, x)| self.put_pixel(name, *x, *y, r, g, b));
+                .for_each(|(y, x)| 
+                    //self.put_pixel(name, *x, *y, r, g, b)
+                    queue.push(Pixel { 
+                        x: *x, 
+                        y: *y, 
+                        a: 255_u8, 
+                        r, 
+                        g, 
+                        b, })
+                );
         }
     }
 
-    pub fn filled_triangle(
-        &mut self,
-        name: &str,
+    pub fn line_horizontal_queue(&self, queue: &mut Vec<Pixel>, x0: i32, y0: i32, x1: i32, r: u8, g: u8, b: u8) {
+        let mut x0 = x0;
+        let mut x1 = x1;
+        if x1 < x0 { (x0, x1) = (x1, x0); }
+        for x in x0..=x1 {
+            queue.push(Pixel { 
+                x, 
+                y: y0, 
+                a: 255_u8, 
+                r, 
+                g, 
+                b, })
+        }
+    }
+
+    // pub fn filled_triangle(
+    //     &mut self,
+    //     name: &str,
+    //     point0: &Vec2,
+    //     point1: &Vec2,
+    //     point2: &Vec2,
+    //     r: u8,
+    //     g: u8,
+    //     b: u8,
+    // ) {
+    //     let mut v0 = *point0;
+    //     let mut v1 = *point1;
+    //     let mut v2 = *point2;
+
+    //     // order the vertices by the y
+    //     if v1.y < v0.y {
+    //         (v0, v1) = (v1, v0);
+    //     }
+    //     if v2.y < v0.y {
+    //         (v0, v2) = (v2, v0);
+    //     }
+    //     if v2.y < v1.y {
+    //         (v1, v2) = (v2, v1);
+    //     }
+
+    //     // floats to integers
+    //     let y0 = v0.y.round() as i32;
+    //     let x0 = v0.x.round() as i32;
+    //     let y1 = v1.y.round() as i32;
+    //     let x1 = v1.x.round() as i32;
+    //     let y2 = v2.y.round() as i32;
+    //     let x2 = v2.x.round() as i32;
+
+    //     // get lines of the edges of the triangles
+    //     // we assume v0 to v2 is the longest edge (in the y scale)
+    //     let edge0 = self.interpolate_int(y0, x0, y2, x2); //v0 to v2, longest
+    //     let mut edge1 = self.interpolate_int(y0, x0, y1, x1); // v0 to v1
+    //     let mut edge2 = self.interpolate_int(y1, x1, y2, x2); // v1 to v2
+
+    //     // join the two short edges into one. Remove the last element of the first edge and then concatenate
+    //     edge1.pop();
+    //     edge1.append(&mut edge2);
+
+    //     // at this point, edge0 is the (y, x) line from top to bottom vertices
+    //     // edge1 is the (y, x) lines from top to midle to bottom vertices
+
+    //     // now we zip the two edges to define the horizontal lines that builds the triangle
+    //     /*
+    //     let triangle_iter = edge0.iter().zip(edge1.iter());
+    //     for ((y0,x0),(y1, x1)) in triangle_iter {
+    //         self.line(name, *x0, *y0, *x1, *y1, r, g, b);
+    //     } */
+    //     edge0
+    //         .iter()
+    //         .zip(edge1.iter())
+    //         .for_each(|((y0, x0), (y1, x1))| 
+    //             self.line(name, *x0, *y0, *x1, *y1, r, g, b)
+    //             //y0 and y1 are always equal
+    //         );
+    // }
+
+    pub fn filled_triangle_queue(
+        &self,
+        queue: &mut Vec<Pixel>,
         point0: &Vec2,
         point1: &Vec2,
         point2: &Vec2,
@@ -567,12 +712,12 @@ impl Display {
         }
 
         // floats to integers
-        let y0 = v0.y.round() as i32;
-        let x0 = v0.x.round() as i32;
-        let y1 = v1.y.round() as i32;
-        let x1 = v1.x.round() as i32;
-        let y2 = v2.y.round() as i32;
-        let x2 = v2.x.round() as i32;
+        let y0 = v0.y as i32;
+        let x0 = v0.x as i32;
+        let y1 = v1.y as i32;
+        let x1 = v1.x as i32;
+        let y2 = v2.y as i32;
+        let x2 = v2.x as i32;
 
         // get lines of the edges of the triangles
         // we assume v0 to v2 is the longest edge (in the y scale)
@@ -596,6 +741,11 @@ impl Display {
         edge0
             .iter()
             .zip(edge1.iter())
-            .for_each(|((y0, x0), (y1, x1))| self.line(name, *x0, *y0, *x1, *y1, r, g, b));
+            .for_each(|((y0, x0), (y1, x1))| 
+                //self.line_queue(queue, *x0, *y0, *x1, *y1, r, g, b);
+                //y0 and y1 are always equal
+                //TODO: create line_horizontal_queue
+                self.line_horizontal_queue(queue, *x0, *y0, *x1, r, g, b)
+            );
     }
 }

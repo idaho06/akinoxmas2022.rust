@@ -1,10 +1,15 @@
-use crate::{display::Display, point::Point, vector::Vec3};
+use crate::{
+    display::Display,
+    point::{Pixel, Point},
+    vector::{Vec2, Vec3},
+};
 use rand::Rng;
 
 pub struct Starfield {
     stars: Vec<Vec3>,
     limits: (f32, f32),
     screen_stars: Vec<Point>,
+    pixel_queue: Vec<Pixel>,
     direction: Vec3,
 }
 
@@ -13,6 +18,9 @@ pub struct Starfield {
         Self::new()
     }
 } */
+
+const STARFIELD_WIDTH: usize = 640;
+const STARFIELD_HEIGHT: usize = 360;
 
 impl Starfield {
     pub fn new(display: &mut Display) -> Self {
@@ -33,7 +41,7 @@ impl Starfield {
             star.z = rng.gen_range(limits.0..limits.1);
         }
 
-        display.add_streaming_buffer("starfield", 640, 360);
+        display.add_streaming_buffer("starfield", STARFIELD_WIDTH, STARFIELD_HEIGHT);
 
         //println!("{:?}", stars);
 
@@ -44,6 +52,7 @@ impl Starfield {
             stars,
             limits,
             screen_stars: Vec::<Point>::new(),
+            pixel_queue: Vec::<Pixel>::new(),
             direction: Vec3 {
                 x: 0.0,
                 y: 0.0,
@@ -92,7 +101,7 @@ impl Starfield {
         let value = value - min;
         let value = value / delta; // this should return a value between 0.0 and 1.0
         let value = 255.0 - (value * 255.0);
-        value.round() as u8
+        value as u8
     }
 
     // update
@@ -110,7 +119,7 @@ impl Starfield {
         let displacement = self.direction.mul(time_factor);
         self.displace(&displacement);
         self.screen_stars.truncate(0); // self.screen_stars.clear();
-        for star3d in self.stars.iter() {
+        for star3d in self.stars.iter() { // TODO: convert to for_each
             // apply camera displacement
             let cam_star3d = star3d.add(&camera);
             // project to screen space
@@ -122,20 +131,40 @@ impl Starfield {
             point.b = color;
             self.screen_stars.push(point);
         }
+
+        // Let's create the pixel buffer
+        self.pixel_queue.truncate(0);
+        let center: Vec2 = Vec2 {
+            x: STARFIELD_WIDTH as f32 / 2.0_f32,
+            y: STARFIELD_HEIGHT as f32 / 2.0_f32,
+        };
+        self.screen_stars.iter().for_each(|point| {
+            let pixel: Pixel = Pixel {
+                x: (point.v.x + center.x) as i32,
+                y: (point.v.y + center.y) as i32,
+                a: point.a,
+                r: point.r,
+                g: point.g,
+                b: point.b,
+            };
+            self.pixel_queue.push(pixel);
+        });
     }
 
     // render
     pub fn render(&self, display: &mut Display) {
         display.clear_streaming_buffer("starfield", 0, 0, 0);
-        let stars_2d = &self.screen_stars;
-        let width = display.streaming_buffer_width("starfield").unwrap();
-        let height = display.streaming_buffer_height("starfield").unwrap();
-        for star in stars_2d.iter() {
-            let x: i32 = (star.v.x.round() + (width as f32 / 2.0)) as i32;
-            let y: i32 = (star.v.y.round() + (height as f32 / 2.0)) as i32;
-            //display.put_pixel(x, y, star.r, star.g, star.b);
-            display.put_pixel("starfield", x, y, star.r, star.g, star.b);
-        }
+        // let stars_2d = &self.screen_stars;
+        // let width = STARFIELD_WIDTH;
+        // let height = STARFIELD_HEIGHT;
+        // for star in stars_2d.iter() {
+        //     let x: i32 = (star.v.x.round() + (width as f32 / 2.0_f32)) as i32;
+        //     let y: i32 = (star.v.y.round() + (height as f32 / 2.0_f32)) as i32;
+        //     //display.put_pixel(x, y, star.r, star.g, star.b);
+
+        //     display.put_pixel("starfield", x, y, star.r, star.g, star.b);
+        // }
+        display.put_pixel_queue("starfield", &self.pixel_queue);
         display.streaming_buffer_to_canvas("starfield");
     }
 }
