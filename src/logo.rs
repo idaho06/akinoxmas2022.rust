@@ -104,7 +104,7 @@ impl Logo {
             let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32;
             let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
             //display.put_pixel(x, y, point.r, point.g, point.b);
-            display.put_sprite_centered(sprite_name.0.as_str(), x, y, 1.0_f32);
+            display.put_sprite_centered(sprite_name.0.as_str(), x, y, 1.0_f32, None);
         }
     }
 }

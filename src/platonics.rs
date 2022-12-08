@@ -21,7 +21,7 @@ pub struct Platonics {
 impl Platonics {
     pub fn new(display: &mut Display) -> Self {
         //display.add_sprite("particle02", "./assets/particle02.png");
-        display.add_sprite("particle02", "./assets/ball.png");
+        display.add_sprite("particle02", "./assets/bola_azul.png");
         //let gr = ((1.0 + 5.0_f64.sqrt())/2.0) as f32;
 
         // clippy warning: calls to `push` immediately after creation
@@ -194,7 +194,11 @@ impl Platonics {
             let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
             //display.put_pixel(x, y, point.r, point.g, point.b);
             let size_factor = 3_f32 / point.z;
-            display.put_sprite_centered("particle02", x, y, size_factor);
+            let light_factor = size_factor.clamp(0.0_f32, 1.0_f32);
+            let color = 255.0_f32 * light_factor;
+            let mod_color = Some((color as u8, color as u8, color as u8,));
+            // TODO: calculate color_mod and add to put_sprite_centered and put_sprite
+            display.put_sprite_centered("particle02", x, y, size_factor, mod_color); // change size_factor and color_mod to Option type
         }
     }
 }

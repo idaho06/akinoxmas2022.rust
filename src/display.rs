@@ -437,12 +437,17 @@ impl Display {
         }
     }
 
-    pub fn put_sprite_centered(&mut self, name: &str, x: i32, y: i32, size_factor: f32) {
-        if let Some(texture) = self.sprites.get(name) {
+    pub fn put_sprite_centered(&mut self, name: &str, x: i32, y: i32, size_factor: f32, mod_color: Option<(u8,u8,u8)>) {
+        if let Some(texture) = self.sprites.get_mut(name) {
             let width = (texture.query().width as f32 * size_factor) as i32;
             let height = (texture.query().height as f32 * size_factor) as i32;
             let cx = x - width / 2;
             let cy = y - height / 2;
+            if let Some((r, g, b)) = mod_color {
+                texture.set_color_mod(r, g, b);    
+            } else {
+                texture.set_color_mod(255_u8, 255_u8, 255_u8);
+            }
             self.canvas
                 .copy(
                     texture,

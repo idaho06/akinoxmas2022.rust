@@ -7,7 +7,7 @@ use crate::{
     vector::{Vec2, Vec3},
 };
 
-const VS_SEGMENT: usize = 8; // vertices per segment
+const VS_SEGMENT: usize = 10; // vertices per segment
 const SEGMENTS: usize = 14; // number of segments
 const S_RADIUS: f32 = 0.25; // radius of segment
 const T_RADIUS: f32 = 0.75; // center of torus to center of segment radius

@@ -69,7 +69,7 @@ pub fn main() -> Result<(), String> {
 
         scroller.render(&mut display);
 
-        //platonics.render(&mut display);
+        platonics.render(&mut display);
 
         //torus.render(&mut display);
 
