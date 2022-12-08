@@ -1,13 +1,13 @@
-use crate::{point::Point, vector::Vec3, display::Display};
+use crate::{display::Display, point::Point, vector::Vec3};
 
 #[derive(Debug)]
 pub struct Platonics {
     tetra: Vec<Vec3>,
     octa: Vec<Vec3>,
     cube: Vec<Vec3>,
-    //dodec: Vec<Vec3>,
-    //icos: Vec<Vec3>,
-    transformed_3dpoints: Vec::<Vec3>,
+    dodec: Vec<Vec3>,
+    icos: Vec<Vec3>,
+    transformed_3dpoints: Vec<Vec3>,
     screen_points: Vec<Point>,
     rotation: Vec3,
 }
@@ -21,7 +21,9 @@ pub struct Platonics {
 impl Platonics {
     pub fn new(display: &mut Display) -> Self {
         //display.add_sprite("particle02", "./assets/particle02.png");
-        display.add_sprite("particle02", "./assets/bola_azul.png");
+        display.add_sprite("bola01", "./assets/bola_roja.png");
+        display.add_sprite("bola02", "./assets/bola_azul.png");
+        display.add_sprite("bola03", "./assets/bola_verde.png");
         //let gr = ((1.0 + 5.0_f64.sqrt())/2.0) as f32;
 
         // clippy warning: calls to `push` immediately after creation
@@ -32,6 +34,10 @@ impl Platonics {
         tetra.push(Vec3{x: -1_f32, y: 1_f32, z: -1_f32});
         tetra.push(Vec3{x: -1_f32, y: -1_f32, z: 1_f32});
         */
+
+        let phi: f32 = (1.0_f32 + 5.0_f32.sqrt()) / 2.0_f32;
+        let inv_phi: f32 = 1_f32 / phi;
+
         let tetra = vec![
             Vec3 {
                 x: 1_f32,
@@ -131,12 +137,178 @@ impl Platonics {
             },
         ];
 
+        let icos = vec![
+            Vec3 {
+                x: 0_f32,
+                y: 1_f32,
+                z: phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: 1_f32,
+                z: -phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: -1_f32,
+                z: phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: -1_f32,
+                z: -phi,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: -phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: -phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: phi,
+                y: 0_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: phi,
+                y: 0_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: -phi,
+                y: 0_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: -phi,
+                y: 0_f32,
+                z: -1_f32,
+            },
+        ];
+
+        let dodec = vec![
+            Vec3 {
+                x: 1_f32,
+                y: 1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: 1_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: -1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: 1_f32,
+                y: -1_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: 1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: 1_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: -1_f32,
+                z: 1_f32,
+            },
+            Vec3 {
+                x: -1_f32,
+                y: -1_f32,
+                z: -1_f32,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: inv_phi,
+                z: phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: inv_phi,
+                z: -phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: -inv_phi,
+                z: phi,
+            },
+            Vec3 {
+                x: 0_f32,
+                y: -inv_phi,
+                z: -phi,
+            },
+            Vec3 {
+                x: inv_phi,
+                y: phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: inv_phi,
+                y: -phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: -inv_phi,
+                y: phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: -inv_phi,
+                y: -phi,
+                z: 0_f32,
+            },
+            Vec3 {
+                x: phi,
+                y: 0_f32,
+                z: inv_phi,
+            },
+            Vec3 {
+                x: phi,
+                y: 0_f32,
+                z: -inv_phi,
+            },
+            Vec3 {
+                x: -phi,
+                y: 0_f32,
+                z: inv_phi,
+            },
+            Vec3 {
+                x: -phi,
+                y: 0_f32,
+                z: -inv_phi,
+            },
+        ];
+
         Self {
             tetra,
             octa,
             cube,
-            //dodec,
-            //icos,
+            dodec,
+            icos,
             transformed_3dpoints: Vec::<Vec3>::new(),
             screen_points: Vec::<Point>::new(),
             rotation: Vec3 {
@@ -160,8 +332,8 @@ impl Platonics {
 
         // clean Vec of transformed 3D points
         self.transformed_3dpoints.clear();
-        // TODO: select tetra, octa or cube
-        for point in self.cube.iter() {
+        // TODO: select tetra, octa, cube, icos or dodec
+        for point in self.dodec.iter() {
             // apply rotation
             let mut rotated_point = *point;
             rotated_point.rotate_x(self.rotation.x);
@@ -170,10 +342,11 @@ impl Platonics {
 
             self.transformed_3dpoints.push(rotated_point.add(&camera));
         }
-        self.transformed_3dpoints.sort_unstable_by(|l, r| r.z.total_cmp(&l.z)); // order 3dpoints by z after trasformation
+        self.transformed_3dpoints
+            .sort_unstable_by(|l, r| r.z.total_cmp(&l.z)); // order 3dpoints by z after trasformation
 
         self.screen_points.truncate(0); //self.screen_points.clean();
-        
+
         for transformed_3dpoint in self.transformed_3dpoints.iter() {
             // "in self.cube" returns Vec3. "in self.cube.iter()" returns &Vec3
             // project to screen space
@@ -185,7 +358,6 @@ impl Platonics {
             point.b = 255_u8;
             self.screen_points.push(point);
         }
-        
     }
 
     pub fn render(&self, display: &mut Display) {
@@ -196,9 +368,10 @@ impl Platonics {
             let size_factor = 3_f32 / point.z;
             let light_factor = size_factor.clamp(0.0_f32, 1.0_f32);
             let color = 255.0_f32 * light_factor;
-            let mod_color = Some((color as u8, color as u8, color as u8,));
+            let mod_color = Some((color as u8, color as u8, color as u8));
             // TODO: calculate color_mod and add to put_sprite_centered and put_sprite
-            display.put_sprite_centered("particle02", x, y, size_factor, mod_color); // change size_factor and color_mod to Option type
+            display.put_sprite_centered("bola01", x, y, size_factor, mod_color);
+            // change size_factor and color_mod to Option type
         }
     }
 }
