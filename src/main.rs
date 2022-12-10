@@ -1,6 +1,7 @@
 extern crate sdl2;
 
 use akinoxmas2022::platonics::Platonics;
+use akinoxmas2022::scene::Scene;
 use akinoxmas2022::scroller::Scroller;
 use akinoxmas2022::display::Display;
 use akinoxmas2022::starfield::Starfield;
@@ -65,13 +66,13 @@ pub fn main() -> Result<(), String> {
 
         starfield.render(&mut display);
 
-        //logo.render(&mut display);
+        logo.render(&mut display);
 
         scroller.render(&mut display);
 
         platonics.render(&mut display);
 
-        //torus.render(&mut display);
+        torus.render(&mut display);
 
         display.present_canvas();
 

@@ -7,6 +7,7 @@ use vector::{Vec2, Vec3};
 
 pub mod display;
 pub mod vector;
+pub mod scene;
 pub mod starfield;
 pub mod point;
 pub mod scroller;

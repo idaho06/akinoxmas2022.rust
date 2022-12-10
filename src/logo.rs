@@ -1,17 +1,17 @@
-use crate::{display::Display, point::Point, vector::Vec3};
+use crate::{display::Display, point::Point, scene::Scene, vector::Vec3};
 
 pub struct Logo {
     order: Vec<Vec3>,
     transformed_3dpoints: Vec<Vec3>,
     screen_points: Vec<Point>,
     camera: Vec3,
-    sprites: Vec<(String,String)>,
+    sprites: Vec<(String, String)>,
 }
 
 impl Logo {
     pub fn new(display: &mut Display) -> Self {
         // load sprites for logo
-        let sprites: Vec<(String,String)> = vec![
+        let sprites: Vec<(String, String)> = vec![
             (String::from("logo01"), String::from("assets/logo01.png")),
             (String::from("logo02"), String::from("assets/logo02.png")),
             (String::from("logo03"), String::from("assets/logo03.png")),
@@ -59,8 +59,10 @@ impl Logo {
             sprites,
         }
     }
+}
 
-    pub fn update(&mut self, t: u32, display: &Display) {
+impl Scene for Logo {
+    fn update(&mut self, t: u32, display: &Display) {
         let time_factor = (t as f32 / 1000.0) as f32;
         self.camera.rotate_z(1.0 * time_factor);
         /* self.rotation.x += 0.5 * time_factor;
@@ -77,8 +79,7 @@ impl Logo {
             rotated_point.rotate_y(self.rotation.y);
             rotated_point.rotate_z(self.rotation.z); */
 
-            self.transformed_3dpoints
-                .push(point.add(&self.camera));
+            self.transformed_3dpoints.push(point.add(&self.camera));
         }
         //self.transformed_3dpoints.sort_unstable_by(|l, r| r.z.total_cmp(&l.z)); // order 3dpoints by z after trasformation
 
@@ -97,7 +98,7 @@ impl Logo {
         }
     }
 
-    pub fn render(&self, display: &mut Display) {
+    fn render(&self, display: &mut Display) {
         let mut sprites_iter = self.sprites.iter();
         for point in self.screen_points.iter() {
             let sprite_name = sprites_iter.next().unwrap();

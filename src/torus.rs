@@ -3,6 +3,7 @@ use std::f32::consts::{PI, TAU};
 use crate::{
     display::Display,
     point::{Pixel, Point},
+    scene::Scene,
     triangle::Triangle,
     vector::{Vec2, Vec3},
 };
@@ -181,7 +182,12 @@ impl Torus {
                 t2.v3 = v4_index % torus_size;
                 t2.g = 255_u8;
 
-                let face = TorusFace { t1, t2, z: 0_f32, color: color%16};
+                let face = TorusFace {
+                    t1,
+                    t2,
+                    z: 0_f32,
+                    color: color % 16,
+                };
                 faces.push(face);
                 color += 1;
             }
@@ -199,7 +205,12 @@ impl Torus {
             t2.v2 = v2_index % torus_size;
             t2.v3 = v4_index % torus_size;
             t2.g = 255_u8;
-            let face = TorusFace { t1, t2, z: 0_f32, color: color%16};
+            let face = TorusFace {
+                t1,
+                t2,
+                z: 0_f32,
+                color: color % 16,
+            };
             faces.push(face);
             color += 1;
         }
@@ -218,9 +229,11 @@ impl Torus {
             colors,
         }
     }
+}
 
+impl Scene for Torus {
     // implement update
-    pub fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display) {
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
@@ -282,13 +295,14 @@ impl Torus {
         // rotate colors
         //self.colors.rotate_right(1);
 
-        for face in self.faces.iter() { // TODO: change this to .for_each(||)
+        for face in self.faces.iter() {
+            // TODO: change this to .for_each(||)
             let color: [u8; 4] = self.colors[face.color].to_be_bytes();
             //let a = color[0];
             let r = color[1];
             let g = color[2];
             let b = color[3];
-            
+
             let t1 = &face.t1;
             let t2 = &face.t2;
 
@@ -321,7 +335,7 @@ impl Torus {
     }
 
     // implement render
-    pub fn render(&self, display: &mut Display) {
+    fn render(&self, display: &mut Display) {
         display.clear_streaming_buffer("torus", 0, 0, 0);
         display.put_pixel_queue("torus", &self.pixel_queue);
         display.streaming_buffer_to_canvas("torus");

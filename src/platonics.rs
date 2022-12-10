@@ -1,4 +1,4 @@
-use crate::{display::Display, point::Point, vector::Vec3};
+use crate::{display::Display, point::Point, scene::Scene, vector::Vec3};
 
 #[derive(Debug)]
 pub struct Platonics {
@@ -318,8 +318,10 @@ impl Platonics {
             },
         }
     }
+}
 
-    pub fn update(&mut self, t: u32, display: &Display) {
+impl Scene for Platonics {
+    fn update(&mut self, t: u32, display: &Display) {
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
@@ -328,7 +330,7 @@ impl Platonics {
         let time_factor = (t as f32 / 1000.0) as f32;
         self.rotation.x += 0.5 * time_factor;
         self.rotation.y += 0.5 * time_factor;
-        self.rotation.z += 0.5 * time_factor;
+        self.rotation.z += 1.0 * time_factor;
 
         // clean Vec of transformed 3D points
         self.transformed_3dpoints.clear();
@@ -360,7 +362,7 @@ impl Platonics {
         }
     }
 
-    pub fn render(&self, display: &mut Display) {
+    fn render(&self, display: &mut Display) {
         for point in self.screen_points.iter() {
             let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32; // TODO: change this to w_width and w_height
             let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;

@@ -1,6 +1,7 @@
 use crate::{
     display::Display,
     point::{Pixel, Point},
+    scene::Scene,
     vector::{Vec2, Vec3},
 };
 use rand::Rng;
@@ -103,9 +104,11 @@ impl Starfield {
         let value = 255.0 - (value * 255.0);
         value as u8
     }
+}
 
+impl Scene for Starfield {
     // update
-    pub fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display) {
         let camera = Vec3 {
             x: 0.0,
             y: 0.0,
@@ -119,7 +122,8 @@ impl Starfield {
         let displacement = self.direction.mul(time_factor);
         self.displace(&displacement);
         self.screen_stars.truncate(0); // self.screen_stars.clear();
-        for star3d in self.stars.iter() { // TODO: convert to for_each
+        for star3d in self.stars.iter() {
+            // TODO: convert to for_each
             // apply camera displacement
             let cam_star3d = star3d.add(&camera);
             // project to screen space
@@ -152,7 +156,7 @@ impl Starfield {
     }
 
     // render
-    pub fn render(&self, display: &mut Display) {
+    fn render(&self, display: &mut Display) {
         display.clear_streaming_buffer("starfield", 0, 0, 0);
         // let stars_2d = &self.screen_stars;
         // let width = STARFIELD_WIDTH;
