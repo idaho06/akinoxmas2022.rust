@@ -1,11 +1,11 @@
 extern crate sdl2;
 
+use akinoxmas2022::display::Display;
+use akinoxmas2022::logo::Logo;
 use akinoxmas2022::platonics::Platonics;
 use akinoxmas2022::scene::Scene;
 use akinoxmas2022::scroller::Scroller;
-use akinoxmas2022::display::Display;
 use akinoxmas2022::starfield::Starfield;
-use akinoxmas2022::logo::Logo;
 use akinoxmas2022::torus::Torus;
 use akinoxmas2022::vector::Vec2;
 use sdl2::event::Event;
@@ -16,16 +16,24 @@ pub fn main() -> Result<(), String> {
     display.cls();
     let mut event_pump = display.event_pump();
 
-    let mut starfield = Starfield::new(&mut display);
+    let starfield = Starfield::new(&mut display);
 
-    let mut scroller = Scroller::new(&mut display);
+    let scroller = Scroller::new(&mut display);
 
-    let mut platonics = Platonics::new(&mut display);
+    let platonics = Platonics::new(&mut display);
 
     //display.add_sprite("akinosoft", "./assets/akinosoft.png");
-    let mut logo = Logo::new(&mut display);
+    let logo = Logo::new(&mut display);
 
-    let mut torus = Torus::new(&mut display);
+    let torus = Torus::new(&mut display);
+
+    let mut scenes: Vec<Box<dyn Scene>> = vec![
+        Box::new(starfield),
+        Box::new(scroller),
+        Box::new(logo),
+        Box::new(platonics),
+        Box::new(torus),
+    ];
 
     let start = display.ticks();
     //let target_ticks_frame: u32 = 1000/60;
@@ -52,27 +60,13 @@ pub fn main() -> Result<(), String> {
 
         display.cls();
 
-        starfield.update(last_frame_delta, &display);
+        // update all
+        scenes
+            .iter_mut()
+            .for_each(|scene| scene.update(last_frame_delta, &display));
 
-        scroller.update(last_frame_delta, &display);
-
-        platonics.update(last_frame_delta, &display);
-
-        logo.update(last_frame_delta, &display);
-
-        torus.update(last_frame_delta, &display);
-
-        //display.clear_color_buffer(0, 0, 0);
-
-        starfield.render(&mut display);
-
-        logo.render(&mut display);
-
-        scroller.render(&mut display);
-
-        platonics.render(&mut display);
-
-        torus.render(&mut display);
+        // render all
+        scenes.iter().for_each(|scene| scene.render(&mut display));
 
         display.present_canvas();
 
@@ -86,6 +80,6 @@ pub fn main() -> Result<(), String> {
 
     println!("Time: {}", display.ticks() - start);
     println!("frames: {}", frames);
-    println!("FPS: {}", frames as f32 / (display.ticks() as f32/1000.0));
+    println!("FPS: {}", frames as f32 / (display.ticks() as f32 / 1000.0));
     Ok(())
 }
