@@ -68,6 +68,12 @@ impl Vec2 {
     }
 }
 
+impl Default for Vec3 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Vec3 {
     pub fn new() -> Self {
         Self { x: 0_f32, y: 0_f32, z: 0_f32 }

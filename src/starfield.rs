@@ -1,7 +1,7 @@
 use crate::{
     display::Display,
     point::{Pixel, Point},
-    scene::Scene,
+    scene::{Scene, Sequence},
     vector::{Vec2, Vec3},
 };
 use rand::Rng;
@@ -108,7 +108,7 @@ impl Starfield {
 
 impl Scene for Starfield {
     // update
-    fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
         let camera = Vec3 {
             x: 0.0,
             y: 0.0,

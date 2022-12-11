@@ -575,6 +575,7 @@ impl Display {
     //     }
     // }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn line_queue(&self, queue: &mut Vec<Pixel>, x0: i32, y0: i32, x1: i32, y1: i32, r: u8, g: u8, b: u8) {
         let dx = x1 - x0;
         let dy = y1 - y0;
@@ -616,6 +617,7 @@ impl Display {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn line_horizontal_queue(&self, queue: &mut Vec<Pixel>, x0: i32, y0: i32, x1: i32, r: u8, g: u8, b: u8) {
         let mut x0 = x0;
         let mut x1 = x1;
@@ -692,6 +694,7 @@ impl Display {
     //         );
     // }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn filled_triangle_queue(
         &self,
         queue: &mut Vec<Pixel>,
@@ -747,7 +750,7 @@ impl Display {
         edge0
             .iter()
             .zip(edge1.iter())
-            .for_each(|((y0, x0), (y1, x1))| 
+            .for_each(|((y0, x0), (_y1, x1))| 
                 //self.line_queue(queue, *x0, *y0, *x1, *y1, r, g, b);
                 //y0 and y1 are always equal
                 //TODO: create line_horizontal_queue

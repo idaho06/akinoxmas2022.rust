@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sdl2::rect::Rect;
 
-use crate::{display::Display, scene::Scene};
+use crate::{display::Display, scene::{Scene, Sequence}};
 
 pub struct Scroller {
     message: String,
@@ -154,7 +154,7 @@ impl Scroller {
 }
 
 impl Scene for Scroller {
-    fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
         self.letter_positions.clear(); //self.letter_positions.truncate(0);
         let mut letters = self.message.chars(); // iterator!
 

@@ -1,9 +1,9 @@
-use std::f32::consts::{PI, TAU};
+use std::f32::consts::TAU;
 
 use crate::{
     display::Display,
     point::{Pixel, Point},
-    scene::Scene,
+    scene::{Scene, Sequence},
     triangle::Triangle,
     vector::{Vec2, Vec3},
 };
@@ -158,10 +158,10 @@ impl Torus {
         let torus_width = SEGMENTS;
         let torus_height = VS_SEGMENT;
         let torus_size = SEGMENTS * VS_SEGMENT;
-        let mut v1_index = 0_usize;
-        let mut v2_index = 0_usize;
-        let mut v3_index = 0_usize;
-        let mut v4_index = 0_usize;
+        let mut v1_index: usize;
+        let mut v2_index: usize;
+        let mut v3_index: usize;
+        let mut v4_index: usize;
 
         let mut color = 0_usize;
         for i in 0..torus_width {
@@ -192,7 +192,7 @@ impl Torus {
                 color += 1;
             }
             v1_index = (i * torus_height) + torus_height - 1;
-            v2_index = (i * torus_height);
+            v2_index = i * torus_height;
             v3_index = v1_index + torus_height;
             v4_index = v1_index + 1;
             let mut t1 = Triangle::new();
@@ -233,7 +233,7 @@ impl Torus {
 
 impl Scene for Torus {
     // implement update
-    fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,

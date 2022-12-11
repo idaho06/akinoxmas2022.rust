@@ -1,4 +1,4 @@
-use crate::{display::Display, point::Point, scene::Scene, vector::Vec3};
+use crate::{display::Display, point::Point, scene::{Scene, Sequence}, vector::Vec3};
 
 pub struct Logo {
     order: Vec<Vec3>,
@@ -62,7 +62,7 @@ impl Logo {
 }
 
 impl Scene for Logo {
-    fn update(&mut self, t: u32, display: &Display) {
+    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
         let time_factor = (t as f32 / 1000.0) as f32;
         self.camera.rotate_z(1.0 * time_factor);
         /* self.rotation.x += 0.5 * time_factor;

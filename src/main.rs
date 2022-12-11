@@ -1,13 +1,16 @@
 extern crate sdl2;
 
+use std::sync::mpsc;
+use std::thread;
+
 use akinoxmas2022::display::Display;
 use akinoxmas2022::logo::Logo;
 use akinoxmas2022::platonics::Platonics;
-use akinoxmas2022::scene::Scene;
+use akinoxmas2022::scene::{sequencer_thread, Scene, Sequence};
 use akinoxmas2022::scroller::Scroller;
 use akinoxmas2022::starfield::Starfield;
 use akinoxmas2022::torus::Torus;
-use akinoxmas2022::vector::Vec2;
+//use akinoxmas2022::vector::Vec2;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 
@@ -44,6 +47,10 @@ pub fn main() -> Result<(), String> {
 
     //display.clear_color_buffer(0, 0, 0);
 
+    let mut change_current_scene: Option<Sequence>;
+    let (tx, rx) = mpsc::channel::<Option<Sequence>>();
+    let _scene_changer_thread_handle = thread::spawn(move || sequencer_thread(tx));
+
     'running: loop {
         frame_time = display.ticks();
         // check input
@@ -58,12 +65,15 @@ pub fn main() -> Result<(), String> {
             }
         }
 
+        //check current scene
+        change_current_scene = rx.try_recv().unwrap_or(None);
+
         display.cls();
 
         // update all
         scenes
             .iter_mut()
-            .for_each(|scene| scene.update(last_frame_delta, &display));
+            .for_each(|scene| scene.update(last_frame_delta, &display, &change_current_scene));
 
         // render all
         scenes.iter().for_each(|scene| scene.render(&mut display));
