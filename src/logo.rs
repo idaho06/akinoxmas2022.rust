@@ -6,6 +6,7 @@ pub struct Logo {
     screen_points: Vec<Point>,
     camera: Vec3,
     sprites: Vec<(String, String)>,
+    current_scene: Sequence,
 }
 
 impl Logo {
@@ -57,12 +58,27 @@ impl Logo {
             transformed_3dpoints: Vec::<Vec3>::new(),
             screen_points: Vec::<Point>::new(),
             sprites,
+            current_scene: Sequence::IntroScene01,
         }
     }
 }
 
 impl Scene for Logo {
-    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
+    fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
+
+        if let Some(new_scene) = scene {
+            self.current_scene = *new_scene;
+            if self.current_scene == Sequence::IntroScene01 {
+                self.camera.x = 0.5;
+                self.camera.y = 0.5;
+            }
+        }
+
+        match self.current_scene {
+            Sequence::IntroScene01 => (),
+            _ => return
+        }
+
         let time_factor = (t as f32 / 1000.0) as f32;
         self.camera.rotate_z(1.0 * time_factor);
         /* self.rotation.x += 0.5 * time_factor;
@@ -99,6 +115,12 @@ impl Scene for Logo {
     }
 
     fn render(&self, display: &mut Display) {
+
+        match self.current_scene {
+            Sequence::IntroScene01 => (),
+            _ => return
+        }
+
         let mut sprites_iter = self.sprites.iter();
         for point in self.screen_points.iter() {
             let sprite_name = sprites_iter.next().unwrap();

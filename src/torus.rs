@@ -28,6 +28,7 @@ pub struct Torus {
     pixel_queue: Vec<Pixel>, // List of pixels to draw
     rotation: Vec3,
     colors: Vec<u32>,
+    current_scene: Sequence,
 }
 
 const WIDTH: usize = 640;
@@ -227,13 +228,26 @@ impl Torus {
                 z: 0.0,
             },
             colors,
+            current_scene: Sequence::IntroScene01,
         }
     }
 }
 
 impl Scene for Torus {
     // implement update
-    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
+    fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
+
+        if let Some(new_scene) = scene {
+            self.current_scene = *new_scene;
+        }
+
+        // clear the pixel queue
+        self.pixel_queue.truncate(0);
+
+        match self.current_scene {
+            _ => return
+        }
+
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
@@ -284,8 +298,6 @@ impl Scene for Torus {
         }
 
         // build the pixel queue
-        self.pixel_queue.truncate(0);
-
         // get center of streaming texture
         let center = Vec2 {
             x: (WIDTH as f32 / 2.0_f32),

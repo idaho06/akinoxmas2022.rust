@@ -7,7 +7,7 @@ pub trait Scene {
     fn render(&self, display: &mut Display);
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Sequence {
     Quit,
     IntroScene01,

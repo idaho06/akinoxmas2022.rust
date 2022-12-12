@@ -10,6 +10,7 @@ pub struct Platonics {
     transformed_3dpoints: Vec<Vec3>,
     screen_points: Vec<Point>,
     rotation: Vec3,
+    current_scene: Sequence,
 }
 
 // impl Default for Platonics {
@@ -316,12 +317,22 @@ impl Platonics {
                 y: 0.0,
                 z: 0.0,
             },
+            current_scene: Sequence::IntroScene01,
         }
     }
 }
 
 impl Scene for Platonics {
-    fn update(&mut self, t: u32, display: &Display, _scene: &Option<Sequence>) {
+    fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
+
+        if let Some(new_scene) = scene {
+            self.current_scene = *new_scene;
+        }
+
+        match self.current_scene {
+            _ => return
+        }
+
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
@@ -363,6 +374,11 @@ impl Scene for Platonics {
     }
 
     fn render(&self, display: &mut Display) {
+
+        match self.current_scene {
+            _ => return
+        }
+
         for point in self.screen_points.iter() {
             let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32; // TODO: change this to w_width and w_height
             let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
