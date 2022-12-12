@@ -1,9 +1,20 @@
+/// Vectors
+/// 
+/// # Vec2, Vec3, Vec4 and associated functions
+/// 
+/// The structs do not have setters for the x, y, z, w internal data.
+/// Everything is f32.
+/// - TODO: make common implementations to traits instead
+/// - TODO: overload common operators like + - * / for add, sub, mul, div, etc.
+
+/// Vec2
 #[derive(Copy, Clone, Debug)]
 pub struct Vec2 {
     pub x: f32,
     pub y: f32,
 }
 
+/// Vec3
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     pub x: f32,
@@ -11,6 +22,7 @@ pub struct Vec3 {
     pub z: f32,
 }
 
+/// Vec4
 #[derive(Copy, Clone, Debug)]
 pub struct Vec4 {
     pub x: f32,
@@ -19,7 +31,11 @@ pub struct Vec4 {
     pub w: f32,
 }
 
+
 impl Vec2 {
+    /// Vec2 lenght
+    /// 
+    /// Returns lenght of the vector
     pub fn lenght(&self) -> f32 {
         ((self.x * self.x) + (self.y * self.y)).sqrt()
     }
