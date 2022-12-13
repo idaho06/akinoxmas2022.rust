@@ -228,7 +228,7 @@ impl Torus {
                 z: 0.0,
             },
             colors,
-            current_scene: Sequence::IntroScene01,
+            current_scene: Sequence::LogoFallingBouncing,
         }
     }
 }
@@ -236,7 +236,6 @@ impl Torus {
 impl Scene for Torus {
     // implement update
     fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
-
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
         }
@@ -245,7 +244,7 @@ impl Scene for Torus {
         self.pixel_queue.truncate(0);
 
         match self.current_scene {
-            _ => return
+            _ => return,
         }
 
         let camera = Vec3 {

@@ -32,8 +32,8 @@ pub fn main() -> Result<(), String> {
 
     let mut scenes: Vec<Box<dyn Scene>> = vec![
         Box::new(starfield),
-        Box::new(scroller),
         Box::new(logo),
+        Box::new(scroller),
         Box::new(platonics),
         Box::new(torus),
     ];

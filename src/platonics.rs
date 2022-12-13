@@ -1,4 +1,9 @@
-use crate::{display::Display, point::Point, scene::{Scene, Sequence}, vector::Vec3};
+use crate::{
+    display::Display,
+    point::Point,
+    scene::{Scene, Sequence},
+    vector::Vec3,
+};
 
 #[derive(Debug)]
 pub struct Platonics {
@@ -317,20 +322,19 @@ impl Platonics {
                 y: 0.0,
                 z: 0.0,
             },
-            current_scene: Sequence::IntroScene01,
+            current_scene: Sequence::LogoFallingBouncing,
         }
     }
 }
 
 impl Scene for Platonics {
     fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
-
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
         }
 
         match self.current_scene {
-            _ => return
+            _ => return,
         }
 
         let camera = Vec3 {
@@ -374,9 +378,8 @@ impl Scene for Platonics {
     }
 
     fn render(&self, display: &mut Display) {
-
         match self.current_scene {
-            _ => return
+            _ => return,
         }
 
         for point in self.screen_points.iter() {

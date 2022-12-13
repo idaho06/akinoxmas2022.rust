@@ -1,4 +1,9 @@
-use crate::{display::Display, point::Point, scene::{Scene, Sequence}, vector::Vec3};
+use crate::{
+    display::Display,
+    point::Point,
+    scene::{Scene, Sequence},
+    vector::{Vec2, Vec3},
+};
 
 pub struct Logo {
     order: Vec<Vec3>,
@@ -6,6 +11,9 @@ pub struct Logo {
     screen_points: Vec<Point>,
     camera: Vec3,
     sprites: Vec<(String, String)>,
+    screen_pos: Vec2,
+    speed: Vec2,
+    acceleration: Vec2,
     current_scene: Sequence,
 }
 
@@ -58,28 +66,62 @@ impl Logo {
             transformed_3dpoints: Vec::<Vec3>::new(),
             screen_points: Vec::<Point>::new(),
             sprites,
-            current_scene: Sequence::IntroScene01,
+            current_scene: Sequence::LogoFallingBouncing,
+            screen_pos: Vec2 {
+                x: 0_f32,
+                y: -400_f32,
+            },
+            speed: Vec2 { x: 0_f32, y: 0_f32 },
+            acceleration: Vec2 {
+                x: 0_f32,
+                y: 10_f32,
+            },
         }
+    }
+
+    fn reset_to_falling(&mut self) {
+        self.camera.x = 0.5;
+        self.camera.y = 0.5;
+        self.screen_pos.x = 0_f32;
+        self.screen_pos.y = -1080_f32;
+        self.acceleration.x = 0_f32;
+        self.acceleration.y = 1000_f32;
+        self.speed.x = 0_f32;
+        self.speed.y = 0_f32;
+    }
+
+    fn falling_in(&mut self, time_factor: f32) {
+        self.speed = self.speed.add(&self.acceleration.mul(time_factor));
+        self.screen_pos = self.screen_pos.add(&self.speed.mul(time_factor));
+        if self.screen_pos.y > 0_f32 {
+            self.screen_pos.y = 0_f32;
+            self.speed.y = -self.speed.y / 1.5_f32;
+        }
+    }
+    fn falling_out(&mut self, time_factor: f32) {
+        self.speed = self.speed.add(&self.acceleration.mul(time_factor));
+        self.screen_pos = self.screen_pos.add(&self.speed.mul(time_factor));
     }
 }
 
 impl Scene for Logo {
     fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
-
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
-            if self.current_scene == Sequence::IntroScene01 {
-                self.camera.x = 0.5;
-                self.camera.y = 0.5;
+            match self.current_scene {
+                Sequence::LogoFallingBouncing => self.reset_to_falling(),
+                Sequence::LogoFallingOut => self.speed.y = -800_f32,
+                _ => (),
             }
         }
 
+        let time_factor = (t as f32 / 1000.0) as f32;
         match self.current_scene {
-            Sequence::IntroScene01 => (),
-            _ => return
+            Sequence::LogoFallingBouncing => self.falling_in(time_factor),
+            Sequence::LogoFallingOut => self.falling_out(time_factor),
+            _ => return,
         }
 
-        let time_factor = (t as f32 / 1000.0) as f32;
         self.camera.rotate_z(1.0 * time_factor);
         /* self.rotation.x += 0.5 * time_factor;
         self.rotation.y += 0.5 * time_factor;
@@ -115,17 +157,21 @@ impl Scene for Logo {
     }
 
     fn render(&self, display: &mut Display) {
-
         match self.current_scene {
-            Sequence::IntroScene01 => (),
-            _ => return
+            Sequence::LogoFallingBouncing => (),
+            Sequence::LogoFallingOut => (),
+            _ => return,
         }
 
         let mut sprites_iter = self.sprites.iter();
         for point in self.screen_points.iter() {
             let sprite_name = sprites_iter.next().unwrap();
-            let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32;
-            let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
+            let x: i32 = (point.v.x.round()
+                + (display.w_width() as f32 / 2.0_f32)
+                + self.screen_pos.x) as i32;
+            let y: i32 = (point.v.y.round()
+                + (display.w_height() as f32 / 2.0_f32)
+                + self.screen_pos.y) as i32;
             //display.put_pixel(x, y, point.r, point.g, point.b);
             display.put_sprite_centered(sprite_name.0.as_str(), x, y, 1.0_f32, None);
         }
