@@ -16,6 +16,7 @@ pub struct Platonics {
     screen_points: Vec<Point>,
     rotation: Vec3,
     current_scene: Sequence,
+    current_platonic: Vec<Vec3>,
 }
 
 // impl Default for Platonics {
@@ -309,6 +310,7 @@ impl Platonics {
             },
         ];
 
+        let current_platonic = dodec.clone();
         Self {
             tetra,
             octa,
@@ -322,7 +324,8 @@ impl Platonics {
                 y: 0.0,
                 z: 0.0,
             },
-            current_scene: Sequence::LogoFallingBouncing,
+            current_scene: Sequence::LogoFallingIn,
+            current_platonic,
         }
     }
 }
@@ -331,7 +334,19 @@ impl Scene for Platonics {
     fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
+            match self.current_scene {
+                //Sequence::PlatonicsTetraIn => self.reset_to_tetra(),
+                //Sequence::PlatonicsTetraOut => self.speed.y = -800_f32,
+                _ => (),
+            }
         }
+
+        let test = vec![Vec3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        }];
+        let test1 = &test;
 
         match self.current_scene {
             _ => return,

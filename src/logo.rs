@@ -66,7 +66,7 @@ impl Logo {
             transformed_3dpoints: Vec::<Vec3>::new(),
             screen_points: Vec::<Point>::new(),
             sprites,
-            current_scene: Sequence::LogoFallingBouncing,
+            current_scene: Sequence::LogoFallingIn,
             screen_pos: Vec2 {
                 x: 0_f32,
                 y: -400_f32,
@@ -109,7 +109,7 @@ impl Scene for Logo {
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
             match self.current_scene {
-                Sequence::LogoFallingBouncing => self.reset_to_falling(),
+                Sequence::LogoFallingIn => self.reset_to_falling(),
                 Sequence::LogoFallingOut => self.speed.y = -800_f32,
                 _ => (),
             }
@@ -117,7 +117,7 @@ impl Scene for Logo {
 
         let time_factor = (t as f32 / 1000.0) as f32;
         match self.current_scene {
-            Sequence::LogoFallingBouncing => self.falling_in(time_factor),
+            Sequence::LogoFallingIn => self.falling_in(time_factor),
             Sequence::LogoFallingOut => self.falling_out(time_factor),
             _ => return,
         }
@@ -158,7 +158,7 @@ impl Scene for Logo {
 
     fn render(&self, display: &mut Display) {
         match self.current_scene {
-            Sequence::LogoFallingBouncing => (),
+            Sequence::LogoFallingIn => (),
             Sequence::LogoFallingOut => (),
             _ => return,
         }

@@ -228,7 +228,7 @@ impl Torus {
                 z: 0.0,
             },
             colors,
-            current_scene: Sequence::LogoFallingBouncing,
+            current_scene: Sequence::LogoFallingIn,
         }
     }
 }
