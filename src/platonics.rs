@@ -2,7 +2,7 @@ use crate::{
     display::Display,
     point::Point,
     scene::{Scene, Sequence},
-    vector::Vec3,
+    vector::{Vec2, Vec3},
 };
 
 #[derive(Debug)]
@@ -17,6 +17,7 @@ pub struct Platonics {
     rotation: Vec3,
     current_scene: Sequence,
     current_platonic: Vec<Vec3>,
+    screen_pos: Vec2,
 }
 
 // impl Default for Platonics {
@@ -326,7 +327,16 @@ impl Platonics {
             },
             current_scene: Sequence::LogoFallingIn,
             current_platonic,
+            screen_pos: Vec2 { x: 0_f32, y: 0_f32 },
         }
+    }
+
+    fn reset_to_tetra(&mut self) {
+        self.current_platonic = self.tetra.clone();
+        self.screen_pos = Vec2 {
+            x: 1920_f32,
+            y: 0_f32,
+        };
     }
 }
 
@@ -335,7 +345,7 @@ impl Scene for Platonics {
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
             match self.current_scene {
-                //Sequence::PlatonicsTetraIn => self.reset_to_tetra(),
+                Sequence::PlatonicsTetraIn => self.reset_to_tetra(),
                 //Sequence::PlatonicsTetraOut => self.speed.y = -800_f32,
                 _ => (),
             }
