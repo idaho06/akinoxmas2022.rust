@@ -1,5 +1,6 @@
 use crate::{
     display::Display,
+    lerp::remap_f32,
     point::Point,
     scene::{Scene, Sequence},
     vector::{Vec2, Vec3},
@@ -18,6 +19,9 @@ pub struct Platonics {
     current_scene: Sequence,
     current_platonic: Vec<Vec3>,
     screen_pos: Vec2,
+    start_time: u32,
+    end_time: u32,
+    now_time: u32,
 }
 
 // impl Default for Platonics {
@@ -311,7 +315,7 @@ impl Platonics {
             },
         ];
 
-        let current_platonic = dodec.clone();
+        let current_platonic = vec![];
         Self {
             tetra,
             octa,
@@ -328,15 +332,26 @@ impl Platonics {
             current_scene: Sequence::LogoFallingIn,
             current_platonic,
             screen_pos: Vec2 { x: 0_f32, y: 0_f32 },
+            start_time: 0_u32,
+            end_time: 0_u32,
+            now_time: 0_u32,
         }
     }
 
-    fn reset_to_tetra(&mut self) {
+    fn reset_to_tetra_in(&mut self, now: u32) {
+        //self.screen_pos = Vec2 {
+        //    x: 1920_f32 / 2_f32,
+        //    y: 0_f32,
+        //};
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
         self.current_platonic = self.tetra.clone();
-        self.screen_pos = Vec2 {
-            x: 1920_f32,
-            y: 0_f32,
-        };
+    }
+    fn reset_to_tetra_out(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
     }
 }
 
@@ -345,20 +360,36 @@ impl Scene for Platonics {
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
             match self.current_scene {
-                Sequence::PlatonicsTetraIn => self.reset_to_tetra(),
+                Sequence::PlatonicsTetraIn => self.reset_to_tetra_in(display.ticks()),
+                Sequence::PlatonicsTetraOut => self.reset_to_tetra_out(display.ticks()),
                 //Sequence::PlatonicsTetraOut => self.speed.y = -800_f32,
                 _ => (),
             }
         }
 
-        let test = vec![Vec3 {
-            x: 1.0,
-            y: 1.0,
-            z: 1.0,
-        }];
-        let test1 = &test;
-
         match self.current_scene {
+            Sequence::PlatonicsTetraIn => {
+                self.now_time += t;
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    1300_f32,
+                    0_f32,
+                    self.now_time as f32,
+                )
+                .clamp(0_f32, 1300_f32)
+            }
+            Sequence::PlatonicsTetraOut => {
+                self.now_time += t;
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    0_f32,
+                    -1300_f32,
+                    self.now_time as f32,
+                )
+                .clamp(-1300_f32, 0_f32)
+            }
             _ => return,
         }
 
@@ -374,8 +405,8 @@ impl Scene for Platonics {
 
         // clean Vec of transformed 3D points
         self.transformed_3dpoints.clear();
-        // TODO: select tetra, octa, cube, icos or dodec
-        for point in self.dodec.iter() {
+        // Select tetra, octa, cube, icos or dodec with self.current_platonic
+        for point in self.current_platonic.iter() {
             // apply rotation
             let mut rotated_point = *point;
             rotated_point.rotate_x(self.rotation.x);
@@ -404,12 +435,16 @@ impl Scene for Platonics {
 
     fn render(&self, display: &mut Display) {
         match self.current_scene {
+            Sequence::PlatonicsTetraIn => (),
+            Sequence::PlatonicsTetraOut => (),
             _ => return,
         }
 
         for point in self.screen_points.iter() {
-            let x: i32 = (point.v.x.round() + (display.w_width() as f32 / 2.0_f32)) as i32; // TODO: change this to w_width and w_height
-            let y: i32 = (point.v.y.round() + (display.w_height() as f32 / 2.0_f32)) as i32;
+            let x: i32 =
+                (point.v.x + (display.w_width() as f32 / 2.0_f32) + self.screen_pos.x) as i32;
+            let y: i32 =
+                (point.v.y + (display.w_height() as f32 / 2.0_f32) + self.screen_pos.y) as i32;
             //display.put_pixel(x, y, point.r, point.g, point.b);
             let size_factor = 3_f32 / point.z;
             let light_factor = size_factor.clamp(0.0_f32, 1.0_f32);

@@ -31,7 +31,8 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
         to
     }
 
-    let mut current_sequence = Sequence::LogoFallingIn;
+    //let mut current_sequence = Sequence::LogoFallingIn;
+    let mut current_sequence = Sequence::PlatonicsTetraIn;
     loop {
         let sequence_totx = current_sequence;
         tx.send(Some(sequence_totx)).unwrap();
@@ -40,13 +41,17 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
                 current_sequence = change_sequence_delayed(Sequence::LogoFallingOut, 10_f32)
             }
             Sequence::LogoFallingOut => {
-                current_sequence = change_sequence_delayed(Sequence::PlatonicsTetraIn, 5_f32)
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsTetraIn, 3_f32)
             }
             Sequence::PlatonicsTetraIn => {
-                current_sequence = change_sequence_delayed(Sequence::PlatonicsTetraOut, 1_f32)
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsTetraOut, 8_f32)
             }
+            Sequence::PlatonicsTetraOut => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsOctaIn, 4_f32)
+            }
+
             Sequence::Quit => break,
-            _ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 1_f32),
+            _ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 0_f32),
         }
     }
 }
