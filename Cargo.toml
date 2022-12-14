@@ -6,9 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rand = {version = "0.8.5"} # for stars randomness
-byte-slice-cast = "1.2.2"  # for converting slices from u8 to u32
-rustc-hash = "1.1.0"       # fast hashing
+rand = { version = "0.8.5" } # for stars randomness
+byte-slice-cast = "1.2.2"    # for converting slices from u8 to u32
+rustc-hash = "1.1.0"         # fast hashing
+# num-traits = "0.2.15"        # Used to make a generic lerp function
 # image = "0.24.5"
 [dependencies.image]
 version = "0.24.5"
@@ -17,4 +18,4 @@ features = ["png"]
 
 [dependencies.sdl2]
 version = "0.35.2"
-features = ["bundled", "unsafe_textures"]  # video, keyboard events
+features = ["bundled", "unsafe_textures"] # video, keyboard events

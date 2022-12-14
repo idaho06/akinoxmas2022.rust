@@ -1,4 +1,4 @@
-/* 
+/*
 use display::Display;
 use point::Point;
 use starfield::Starfield;
@@ -6,17 +6,18 @@ use vector::{Vec2, Vec3};
 */
 
 pub mod display;
-pub mod vector;
-pub mod scene;
-pub mod starfield;
-pub mod point;
-pub mod scroller;
-pub mod platonics;
+pub mod lerp;
 pub mod logo;
-pub mod triangle;
+pub mod platonics;
+pub mod point;
+pub mod scene;
+pub mod scroller;
+pub mod starfield;
 pub mod torus;
+pub mod triangle;
+pub mod vector;
 
-/* 
+/*
 fn posterize(min: f32, max: f32, value: f32) -> u8 {
     if value < min { return 0xff }
     if value > max { return 0x00 }
@@ -29,8 +30,8 @@ fn posterize(min: f32, max: f32, value: f32) -> u8 {
 
 fn project(v: &Vec3) -> Vec2 {
     let fov_factor: f32 = 320.0;
-    Vec2 { 
-        x: (fov_factor * v.x) / v.z , 
+    Vec2 {
+        x: (fov_factor * v.x) / v.z ,
         y: (fov_factor * -v.y) / v.z ,
     }
 }
