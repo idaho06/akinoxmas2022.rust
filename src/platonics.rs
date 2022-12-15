@@ -36,6 +36,8 @@ impl Platonics {
         display.add_sprite("bola01", "./assets/bola_roja.png");
         display.add_sprite("bola02", "./assets/bola_azul.png");
         display.add_sprite("bola03", "./assets/bola_verde.png");
+        display.add_sprite("bola04", "./assets/bola_morada.png");
+        display.add_sprite("bola05", "./assets/bola_amarilla.png");
         //let gr = ((1.0 + 5.0_f64.sqrt())/2.0) as f32;
 
         // clippy warning: calls to `push` immediately after creation
@@ -375,6 +377,28 @@ impl Platonics {
         self.end_time = now + 3000_u32;
         self.now_time = self.start_time;
     }
+    fn reset_to_icos_in(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+        self.current_platonic = self.icos.clone();
+    }
+    fn reset_to_icos_out(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+    }
+    fn reset_to_dodec_in(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+        self.current_platonic = self.dodec.clone();
+    }
+    fn reset_to_dodec_out(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+    }
 }
 
 impl Scene for Platonics {
@@ -389,6 +413,10 @@ impl Scene for Platonics {
                 Sequence::PlatonicsOctaOut => self.reset_to_octa_out(display.ticks()),
                 Sequence::PlatonicsCubeIn => self.reset_to_cube_in(display.ticks()),
                 Sequence::PlatonicsCubeOut => self.reset_to_cube_out(display.ticks()),
+                Sequence::PlatonicsIcosIn => self.reset_to_icos_in(display.ticks()),
+                Sequence::PlatonicsIcosOut => self.reset_to_icos_out(display.ticks()),
+                Sequence::PlatonicsDodecIn => self.reset_to_dodec_in(display.ticks()),
+                Sequence::PlatonicsDodecOut => self.reset_to_dodec_out(display.ticks()),
                 _ => (), // New scene is not relevant here
             }
         } else {
@@ -457,6 +485,46 @@ impl Scene for Platonics {
                 )
                 .clamp(-1300_f32, 0_f32)
             }
+            Sequence::PlatonicsIcosIn => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    1300_f32,
+                    0_f32,
+                    self.now_time as f32,
+                )
+                .clamp(0_f32, 1300_f32)
+            }
+            Sequence::PlatonicsIcosOut => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    0_f32,
+                    -1300_f32,
+                    self.now_time as f32,
+                )
+                .clamp(-1300_f32, 0_f32)
+            }
+            Sequence::PlatonicsDodecIn => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    1300_f32,
+                    0_f32,
+                    self.now_time as f32,
+                )
+                .clamp(0_f32, 1300_f32)
+            }
+            Sequence::PlatonicsDodecOut => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    0_f32,
+                    -1300_f32,
+                    self.now_time as f32,
+                )
+                .clamp(-1300_f32, 0_f32)
+            }
             _ => return,
         }
 
@@ -516,6 +584,10 @@ impl Scene for Platonics {
             Sequence::PlatonicsOctaOut => "bola02",
             Sequence::PlatonicsCubeIn => "bola03",
             Sequence::PlatonicsCubeOut => "bola03",
+            Sequence::PlatonicsIcosIn => "bola04",
+            Sequence::PlatonicsIcosOut => "bola04",
+            Sequence::PlatonicsDodecIn => "bola05",
+            Sequence::PlatonicsDodecOut => "bola05",
             _ => return,
         };
 

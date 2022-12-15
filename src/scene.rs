@@ -18,10 +18,11 @@ pub enum Sequence {
     PlatonicsOctaOut,
     PlatonicsCubeIn,
     PlatonicsCubeOut,
-    PlatonicsIcoIn,
-    PlatonicsIcoOut,
+    PlatonicsIcosIn,
+    PlatonicsIcosOut,
     PlatonicsDodecIn,
     PlatonicsDodecOut,
+    Torus01Appear,
 }
 
 pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
@@ -59,8 +60,21 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
                 current_sequence = change_sequence_delayed(Sequence::PlatonicsCubeOut, 8_f32)
             }
             Sequence::PlatonicsCubeOut => {
-                current_sequence = change_sequence_delayed(Sequence::PlatonicsIcoIn, 4_f32)
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsIcosIn, 4_f32)
             }
+            Sequence::PlatonicsIcosIn => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsIcosOut, 8_f32)
+            }
+            Sequence::PlatonicsIcosOut => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsDodecIn, 4_f32)
+            }
+            Sequence::PlatonicsDodecIn => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsDodecOut, 8_f32)
+            }
+            Sequence::PlatonicsDodecOut => {
+                current_sequence = change_sequence_delayed(Sequence::Torus01Appear, 4_f32)
+            }
+
             Sequence::Quit => break,
             _ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 0_f32),
         }
