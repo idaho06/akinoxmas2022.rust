@@ -7,7 +7,7 @@ pub trait Scene {
     fn render(&self, display: &mut Display);
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Sequence {
     Quit,
     LogoFallingIn,
@@ -32,7 +32,7 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
     }
 
     //let mut current_sequence = Sequence::LogoFallingIn;
-    let mut current_sequence = Sequence::PlatonicsTetraIn;
+    let mut current_sequence = Sequence::LogoFallingIn; // first scene
     loop {
         let sequence_totx = current_sequence;
         tx.send(Some(sequence_totx)).unwrap();
@@ -49,7 +49,18 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
             Sequence::PlatonicsTetraOut => {
                 current_sequence = change_sequence_delayed(Sequence::PlatonicsOctaIn, 4_f32)
             }
-
+            Sequence::PlatonicsOctaIn => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsOctaOut, 8_f32)
+            }
+            Sequence::PlatonicsOctaOut => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsCubeIn, 4_f32)
+            }
+            Sequence::PlatonicsCubeIn => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsCubeOut, 8_f32)
+            }
+            Sequence::PlatonicsCubeOut => {
+                current_sequence = change_sequence_delayed(Sequence::PlatonicsIcoIn, 4_f32)
+            }
             Sequence::Quit => break,
             _ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 0_f32),
         }

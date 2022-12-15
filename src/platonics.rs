@@ -353,23 +353,50 @@ impl Platonics {
         self.end_time = now + 3000_u32;
         self.now_time = self.start_time;
     }
+    fn reset_to_octa_in(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+        self.current_platonic = self.octa.clone();
+    }
+    fn reset_to_octa_out(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+    }
+    fn reset_to_cube_in(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+        self.current_platonic = self.cube.clone();
+    }
+    fn reset_to_cube_out(&mut self, now: u32) {
+        self.start_time = now;
+        self.end_time = now + 3000_u32;
+        self.now_time = self.start_time;
+    }
 }
 
 impl Scene for Platonics {
     fn update(&mut self, t: u32, display: &Display, scene: &Option<Sequence>) {
+        // check scene change and run updates for the new scene
         if let Some(new_scene) = scene {
             self.current_scene = *new_scene;
             match self.current_scene {
                 Sequence::PlatonicsTetraIn => self.reset_to_tetra_in(display.ticks()),
                 Sequence::PlatonicsTetraOut => self.reset_to_tetra_out(display.ticks()),
+                Sequence::PlatonicsOctaIn => self.reset_to_octa_in(display.ticks()),
+                Sequence::PlatonicsOctaOut => self.reset_to_octa_out(display.ticks()),
+                Sequence::PlatonicsCubeIn => self.reset_to_cube_in(display.ticks()),
+                Sequence::PlatonicsCubeOut => self.reset_to_cube_out(display.ticks()),
                 //Sequence::PlatonicsTetraOut => self.speed.y = -800_f32,
-                _ => (),
+                _ => self.now_time += t, // no new scene
             }
         }
 
+        // updates specific to the scene
         match self.current_scene {
             Sequence::PlatonicsTetraIn => {
-                self.now_time += t;
                 self.screen_pos.x = remap_f32(
                     self.start_time as f32,
                     self.end_time as f32,
@@ -380,7 +407,46 @@ impl Scene for Platonics {
                 .clamp(0_f32, 1300_f32)
             }
             Sequence::PlatonicsTetraOut => {
-                self.now_time += t;
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    0_f32,
+                    -1300_f32,
+                    self.now_time as f32,
+                )
+                .clamp(-1300_f32, 0_f32)
+            }
+            Sequence::PlatonicsOctaIn => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    1300_f32,
+                    0_f32,
+                    self.now_time as f32,
+                )
+                .clamp(0_f32, 1300_f32)
+            }
+            Sequence::PlatonicsOctaOut => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    0_f32,
+                    -1300_f32,
+                    self.now_time as f32,
+                )
+                .clamp(-1300_f32, 0_f32)
+            }
+            Sequence::PlatonicsCubeIn => {
+                self.screen_pos.x = remap_f32(
+                    self.start_time as f32,
+                    self.end_time as f32,
+                    1300_f32,
+                    0_f32,
+                    self.now_time as f32,
+                )
+                .clamp(0_f32, 1300_f32)
+            }
+            Sequence::PlatonicsCubeOut => {
                 self.screen_pos.x = remap_f32(
                     self.start_time as f32,
                     self.end_time as f32,
@@ -393,6 +459,7 @@ impl Scene for Platonics {
             _ => return,
         }
 
+        // updates common to all scenes
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
@@ -434,11 +501,22 @@ impl Scene for Platonics {
     }
 
     fn render(&self, display: &mut Display) {
-        match self.current_scene {
-            Sequence::PlatonicsTetraIn => (),
-            Sequence::PlatonicsTetraOut => (),
+        // clippy warning: unneeded late initialization
+        //let name: &str;
+        //match self.current_scene {
+        //    Sequence::PlatonicsTetraIn => name = "bola01",
+        //    Sequence::PlatonicsTetraOut => name = "bola01",
+        //    _ => return,
+        //}
+        let name: &str = match self.current_scene {
+            Sequence::PlatonicsTetraIn => "bola01",
+            Sequence::PlatonicsTetraOut => "bola01",
+            Sequence::PlatonicsOctaIn => "bola02",
+            Sequence::PlatonicsOctaOut => "bola02",
+            Sequence::PlatonicsCubeIn => "bola03",
+            Sequence::PlatonicsCubeOut => "bola03",
             _ => return,
-        }
+        };
 
         for point in self.screen_points.iter() {
             let x: i32 =
@@ -450,9 +528,8 @@ impl Scene for Platonics {
             let light_factor = size_factor.clamp(0.0_f32, 1.0_f32);
             let color = 255.0_f32 * light_factor;
             let mod_color = Some((color as u8, color as u8, color as u8));
-            // TODO: calculate color_mod and add to put_sprite_centered and put_sprite
-            display.put_sprite_centered("bola01", x, y, size_factor, mod_color);
-            // change size_factor and color_mod to Option type
+            display.put_sprite_centered(name, x, y, size_factor, mod_color);
+            // change size_factor to Option type
         }
     }
 }
