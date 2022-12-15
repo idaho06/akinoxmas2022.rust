@@ -389,9 +389,10 @@ impl Scene for Platonics {
                 Sequence::PlatonicsOctaOut => self.reset_to_octa_out(display.ticks()),
                 Sequence::PlatonicsCubeIn => self.reset_to_cube_in(display.ticks()),
                 Sequence::PlatonicsCubeOut => self.reset_to_cube_out(display.ticks()),
-                //Sequence::PlatonicsTetraOut => self.speed.y = -800_f32,
-                _ => self.now_time += t, // no new scene
+                _ => (), // New scene is not relevant here
             }
+        } else {
+            self.now_time += t; // no new scene
         }
 
         // updates specific to the scene
