@@ -11,6 +11,7 @@ byte-slice-cast = "1.2.2"    # for converting slices from u8 to u32
 rustc-hash = "1.1.0"         # fast hashing
 # num-traits = "0.2.15"        # Used to make a generic lerp function
 # image = "0.24.5"
+rusty_audio = "1.4.0"
 [dependencies.image]
 version = "0.24.5"
 default-features = false

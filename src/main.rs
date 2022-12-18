@@ -6,7 +6,7 @@ use std::thread;
 use akinoxmas2022::display::Display;
 use akinoxmas2022::logo::Logo;
 use akinoxmas2022::platonics::Platonics;
-use akinoxmas2022::scene::{sequencer_thread, Scene, Sequence};
+use akinoxmas2022::scene::{music_thread, sequencer_thread, Scene, Sequence};
 use akinoxmas2022::scroller::Scroller;
 use akinoxmas2022::starfield::Starfield;
 use akinoxmas2022::torus::Torus;
@@ -38,8 +38,6 @@ pub fn main() -> Result<(), String> {
         Box::new(torus),
     ];
 
-    let start = display.ticks();
-    //let target_ticks_frame: u32 = 1000/60;
     let mut frame_time: u32;
     let mut last_frame_delta: u32 = 0;
 
@@ -47,10 +45,13 @@ pub fn main() -> Result<(), String> {
 
     //display.clear_color_buffer(0, 0, 0);
 
+    let _scene_music_thread_handle = thread::spawn(|| music_thread());
+
     let mut change_current_scene: Option<Sequence>;
     let (tx, rx) = mpsc::channel::<Option<Sequence>>();
     let _scene_changer_thread_handle = thread::spawn(move || sequencer_thread(tx));
 
+    let start = display.ticks();
     'running: loop {
         frame_time = display.ticks();
         // check input

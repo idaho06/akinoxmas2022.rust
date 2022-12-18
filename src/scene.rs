@@ -1,3 +1,5 @@
+use rusty_audio::Audio;
+
 use crate::display::Display;
 use core::time;
 use std::{sync::mpsc::Sender, thread};
@@ -37,9 +39,18 @@ pub enum Sequence {
     Torus04Out,
 }
 
+pub fn music_thread() {
+    let mut audio = Audio::new();
+    audio.add("music", "./assets/placeholder01.ogg");
+    loop {
+        audio.play("music");
+        audio.wait();
+    }
+}
+
 pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
     fn change_sequence_delayed(to: Sequence, after: f32) -> Sequence {
-        println!("Sleeping before change to {:?}", to);
+        //println!("Sleeping before change to {:?}", to);
         thread::sleep(time::Duration::from_secs_f32(after));
         to
     }
