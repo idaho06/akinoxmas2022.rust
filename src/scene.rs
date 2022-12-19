@@ -139,7 +139,7 @@ pub fn sequencer_thread(tx: Sender<Option<Sequence>>) {
             }
 
             Sequence::Quit => break,
-            _ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 0_f32),
+            //_ => current_sequence = change_sequence_delayed(Sequence::LogoFallingIn, 0_f32),
         }
     }
 }

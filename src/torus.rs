@@ -9,10 +9,10 @@ use crate::{
     vector::{Vec2, Vec3},
 };
 
-const VS_SEGMENT: usize = 10; // vertices per segment
-const SEGMENTS: usize = 14; // number of segments
-const S_RADIUS: f32 = 0.25; // radius of segment
-const T_RADIUS: f32 = 0.75; // center of torus to center of segment radius
+//const VS_SEGMENT: usize = 10; // vertices per segment
+//const SEGMENTS: usize = 14; // number of segments
+//const S_RADIUS: f32 = 0.25; // radius of segment
+//const T_RADIUS: f32 = 0.75; // center of torus to center of segment radius
 
 struct TorusFace {
     t1: Triangle,
@@ -31,7 +31,7 @@ pub struct Torus {
     colors: Vec<u32>,
     current_scene: Sequence,
     camera: Vec3,
-    screen_pos: Vec2,
+    //screen_pos: Vec2,
     start_time: u32,
     end_time: u32,
     now_time: u32,
@@ -70,7 +70,7 @@ impl Torus {
                 y: 0.0_f32,
                 z: 5.0_f32,
             },
-            screen_pos: Vec2 { x: 0_f32, y: 0_f32 },
+            //screen_pos: Vec2 { x: 0_f32, y: 0_f32 },
             start_time: 0_u32,
             end_time: 0_u32,
             now_time: 0_u32,
@@ -313,9 +313,9 @@ impl Torus {
     fn get_palette_cga1() -> Vec<u32> {
         vec![0xFF000000, 0xff55ffff, 0xffff55ff, 0xffffffff]
     }
-    fn get_palette_cga2() -> Vec<u32> {
-        vec![0xFF000000, 0xff55ff55, 0xffff5555, 0xffffff55]
-    }
+    // fn get_palette_cga2() -> Vec<u32> {
+    //     vec![0xFF000000, 0xff55ff55, 0xffff5555, 0xffffff55]
+    // }
 
     fn reset_to_torus01_in(&mut self, now: u32) {
         self.faces_in_screen = 0_f32;

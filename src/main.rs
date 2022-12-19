@@ -45,7 +45,7 @@ pub fn main() -> Result<(), String> {
 
     //display.clear_color_buffer(0, 0, 0);
 
-    let _scene_music_thread_handle = thread::spawn(|| music_thread());
+    let _scene_music_thread_handle = thread::spawn(music_thread);
 
     let mut change_current_scene: Option<Sequence>;
     let (tx, rx) = mpsc::channel::<Option<Sequence>>();
