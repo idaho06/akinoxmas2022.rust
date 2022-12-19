@@ -29,6 +29,8 @@ pub struct Display {
     timer: TimerSubsystem,
     w_width: u32,
     w_height: u32,
+    scaling_factor_w: f32,
+    scaling_factor_h: f32,
     //window: Window,
     canvas: Canvas<Window>,
     //texture_creator: TextureCreator<WindowContext>,
@@ -71,15 +73,22 @@ impl Display {
         }
 
         println!("Current display w: {} h: {}", dm.w, dm.h);
-        //let w_width: u32 = dm.w as u32;
-        //let w_height: u32 = dm.h as u32;
 
         let w_width: u32 = 1920;
         let w_height: u32 = 1080;
-        println!("Forcing display w: {} h: {}", w_width, w_height);
+
+        // Calculate scaling factor from screen size to a virtual 1920x1080
+        let scaling_factor_w: f32 = dm.w as f32 / w_width as f32;
+        let scaling_factor_h: f32 = dm.h as f32 / w_height as f32;
+
+        //let w_width: u32 = dm.w as u32;
+        //let w_height: u32 = dm.h as u32;
+
+        println!("Virtual display w: {} h: {}", w_width, w_height);
+        println!("Size factors w: {} h: {}", scaling_factor_w, scaling_factor_h);
 
         let window = video_subsystem
-            .window("AkinoXmas 2022", w_width, w_height)
+            .window("AkinoXmas 2022", dm.w as u32, dm.h as u32)
             .position_centered()
             //.vulkan()
             //.opengl()
@@ -151,6 +160,8 @@ impl Display {
             w_width,
             //w_height: w_height,
             w_height,
+            scaling_factor_w,
+            scaling_factor_h,
             //window: window,
             //canvas: canvas,
             canvas,
@@ -448,6 +459,13 @@ impl Display {
             } else {
                 texture.set_color_mod(255_u8, 255_u8, 255_u8);
             }
+            // transform width, height, cx and cy for the virtual 1920x1080 screen
+            // to the real screen
+            let width: i32 = (width as f32 * self.scaling_factor_w) as i32;
+            let height: i32 = (height as f32 * self.scaling_factor_h) as i32;
+            let cx: i32 = (cx as f32 * self.scaling_factor_w) as i32;
+            let cy: i32 = (cy as f32 * self.scaling_factor_h) as i32;
+
             self.canvas
                 .copy(
                     texture,
@@ -488,8 +506,16 @@ impl Display {
         }
         */
         if let Some(texture) = self.sprites.get(name) {
+            // transform width, height, x and y for the virtual 1920x1080 screen
+            // to the real screen
+            let width: u32 = (dst_rect.w as f32 * self.scaling_factor_w) as u32;
+            let height: u32 = (dst_rect.h as f32 * self.scaling_factor_h) as u32;
+            let x: i32 = (dst_rect.x as f32 * self.scaling_factor_w) as i32;
+            let y: i32 = (dst_rect.y as f32 * self.scaling_factor_h) as i32;
+            let dst_rect = Rect::new(x, y, width, height);
+
             self.canvas
-                .copy(texture, Some(*src_rect), Some(*dst_rect))
+                .copy(texture, Some(*src_rect), Some(dst_rect))
                 .unwrap()
         }
     }
@@ -753,7 +779,6 @@ impl Display {
             .for_each(|((y0, x0), (_y1, x1))| 
                 //self.line_queue(queue, *x0, *y0, *x1, *y1, r, g, b);
                 //y0 and y1 are always equal
-                //TODO: create line_horizontal_queue
                 self.line_horizontal_queue(queue, *x0, *y0, *x1, r, g, b)
             );
     }
