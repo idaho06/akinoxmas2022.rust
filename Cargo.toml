@@ -2,6 +2,7 @@
 name = "akinoxmas2022"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -20,3 +21,10 @@ features = ["png"]
 [dependencies.sdl2]
 version = "0.35.2"
 features = ["bundled", "unsafe_textures"] # video, keyboard events
+
+[target.'cfg(windows)'.build-dependencies]
+winres = "0.1.12"
+
+[package.metadata.winres]
+# OriginalFilename = ".EXE"
+LegalCopyright = "© 2022 AkinoSoft"

@@ -110,7 +110,7 @@ impl Display {
         let mut pixels = Self::load_icon_256_256_4();
         window.set_icon(
             Surface::from_data(
-                &mut pixels.as_mut_slice(), 
+                pixels.as_mut_slice(), 
                 256, 
                 256, 
                 256*4, 
