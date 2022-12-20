@@ -87,7 +87,7 @@ impl Display {
         println!("Virtual display w: {} h: {}", w_width, w_height);
         println!("Size factors w: {} h: {}", scaling_factor_w, scaling_factor_h);
 
-        let window = video_subsystem
+        let mut window = video_subsystem
             .window("AkinoXmas 2022", dm.w as u32, dm.h as u32)
             .position_centered()
             //.vulkan()
@@ -99,8 +99,26 @@ impl Display {
             .build()
             .map_err(|e| e.to_string())
             .unwrap();
-        //window.set_icon(icon); // This needs a surface. TODO: Create a load_icon function returning a surface using image crate instead of SDL_image
-
+        //let surface_for_icon = Surface::from_data(
+        //    buffer_for_icon.as_mut_slice(),
+        //    image_from_file.width(),
+        //    image_from_file.height(),
+        //    image_from_file.width() * 4,
+        //    PixelFormatEnum::ARGB8888,
+        //)
+        //.unwrap();
+        let mut pixels = Self::load_icon_256_256_4();
+        window.set_icon(
+            Surface::from_data(
+                &mut pixels.as_mut_slice(), 
+                256, 
+                256, 
+                256*4, 
+                PixelFormatEnum::ARGB8888 
+            )
+            .unwrap()
+        );
+        
         let canvas = window
             .into_canvas()
             .accelerated()
@@ -378,6 +396,30 @@ impl Display {
         */
         self.canvas.copy(&self.texture, None, None).unwrap();
     } */
+
+    fn load_icon_256_256_4() -> Vec<u8> {
+        let image_from_file = image::open("./assets/bola_roja.png")
+            // clippy warning: use of `expect` followed by a function call
+            //.expect(format!("Cannot read image file: {}", filename).as_str())
+            .unwrap_or_else(|_| panic!("Cannot read icon file"))
+            .into_rgba8();
+        let mut buffer_for_icon = Vec::<u8>::new();
+        for image_pixel in image_from_file.pixels() {
+            buffer_for_icon.push(image_pixel.0[2]); // blue
+            buffer_for_icon.push(image_pixel.0[1]); // green
+            buffer_for_icon.push(image_pixel.0[0]); // red
+            buffer_for_icon.push(image_pixel.0[3]); // alpha
+        }
+        //let surface_for_icon = Surface::from_data(
+        //    buffer_for_icon.as_mut_slice(),
+        //    image_from_file.width(),
+        //    image_from_file.height(),
+        //    image_from_file.width() * 4,
+        //    PixelFormatEnum::ARGB8888,
+        //)
+        //.unwrap();
+        buffer_for_icon
+    }
 
     pub fn add_sprite(&mut self, name: &str, filename: &str) {
         let image_from_file = image::open(filename)
