@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 extern crate sdl2;
 
 use std::sync::mpsc;
