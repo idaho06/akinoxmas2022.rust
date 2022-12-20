@@ -440,10 +440,10 @@ impl Scene for Platonics {
                     self.start_time as f32,
                     self.end_time as f32,
                     0_f32,
-                    -1300_f32,
+                    -1500_f32,
                     self.now_time as f32,
                 )
-                .clamp(-1300_f32, 0_f32)
+                .clamp(-1500_f32, 0_f32)
             }
             Sequence::PlatonicsOctaIn => {
                 self.screen_pos.x = remap_f32(
@@ -460,10 +460,10 @@ impl Scene for Platonics {
                     self.start_time as f32,
                     self.end_time as f32,
                     0_f32,
-                    -1300_f32,
+                    -1500_f32,
                     self.now_time as f32,
                 )
-                .clamp(-1300_f32, 0_f32)
+                .clamp(-1500_f32, 0_f32)
             }
             Sequence::PlatonicsCubeIn => {
                 self.screen_pos.x = remap_f32(
@@ -480,10 +480,10 @@ impl Scene for Platonics {
                     self.start_time as f32,
                     self.end_time as f32,
                     0_f32,
-                    -1300_f32,
+                    -1500_f32,
                     self.now_time as f32,
                 )
-                .clamp(-1300_f32, 0_f32)
+                .clamp(-1500_f32, 0_f32)
             }
             Sequence::PlatonicsIcosIn => {
                 self.screen_pos.x = remap_f32(
@@ -500,10 +500,10 @@ impl Scene for Platonics {
                     self.start_time as f32,
                     self.end_time as f32,
                     0_f32,
-                    -1300_f32,
+                    -1500_f32,
                     self.now_time as f32,
                 )
-                .clamp(-1300_f32, 0_f32)
+                .clamp(-1500_f32, 0_f32)
             }
             Sequence::PlatonicsDodecIn => {
                 self.screen_pos.x = remap_f32(
@@ -520,10 +520,10 @@ impl Scene for Platonics {
                     self.start_time as f32,
                     self.end_time as f32,
                     0_f32,
-                    -1300_f32,
+                    -1500_f32,
                     self.now_time as f32,
                 )
-                .clamp(-1300_f32, 0_f32)
+                .clamp(-1500_f32, 0_f32)
             }
             _ => return,
         }
@@ -532,7 +532,7 @@ impl Scene for Platonics {
         let camera = Vec3 {
             x: 0.0_f32,
             y: 0.0_f32,
-            z: 5.0_f32,
+            z: 4.0_f32,
         };
         let time_factor = (t as f32 / 1000.0) as f32;
         self.rotation.x += 0.5 * time_factor;
