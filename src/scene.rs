@@ -41,7 +41,7 @@ pub enum Sequence {
 
 pub fn music_thread() {
     let mut audio = Audio::new();
-    audio.add("music", "./assets/placeholder01.ogg");
+    audio.add("music", "./assets/AkinoXmas_2022_v3.mp3");
     loop {
         audio.play("music");
         audio.wait();
