@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use sdl2::rect::Rect;
 
-use crate::{display::Display, scene::{Scene, Sequence}};
+use crate::{
+    display::Display,
+    scene::{Scene, Sequence},
+};
 
 pub struct Scroller {
     message: String,
@@ -25,14 +28,19 @@ impl Scroller {
  ¿No conoces al grupo AkinoSoft? Somos los mejores coders, preventas,
  ilustradores y administradores de sistemas que han existido. 
  Somos ricos y guapos, como jodidas estrellas de rock.
- ¡FELIZ NAVIDAD CABRONES!
+ ¡FELIZ NAVIDAD CABRONES! ¡Adios 2022! ¿Iremos a alguna
+ demoparty a presentar algo? No creo. Al final, el secreto para hacer 3D era...
+ ¡Dividir por Z! Las bolas de navidad forman las 5 figuras platonicas y el
+ donut 3D es una estructura geometrica llamada \"toroide\". El donut 3D
+ es un homenaje a un viejo programa en QBasic que se llama \"TORUS.BAS\". 
  Saludos a mis coleguitas Ikky, Po, Rx, Fabi, Lethe y Palo.
  Por las redes estan: @ruben3d, @itorres@xin.cat, @PalomoGarron,
  @frikivetusto, @Rheovarn, @Rober_dcm, @ouros, @LordTaishi, @gerarw,
  @TamL46, @Qetu, @Titonosfe, @Rivudo, @ikkante, @pedro_ru_mo, @kanotson,
- @DavidBokeh, @reemplazable. 
+ @DavidBokeh, @reemplazable.
+ Muchas gracias a Ikky, Fabi y Palo por su tiempo. A mis amigos y mi familia.
  Besitos a mis amores Marta, Raquel y Ester.
- Code: @idaho06 Gfx: @ikkante Music: Fabi
+ - Code: @idaho06 - Gfx: @ikkante - Music: Fabi - Hosting : Palo
  --( Pulsa ESC para salir )--"
             .replace('\n', "");
         let message_len = message.chars().count();

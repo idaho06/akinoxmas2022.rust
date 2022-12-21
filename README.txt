@@ -13,9 +13,10 @@ We've been working on this production for a couple of months, and we're finally 
 
 Featuring stunning graphics, mind-blowing effects, and an epic soundtrack, this demo will blow you away. The result is a visual feast that you won't be able to look away from.
 
- - Code: idaho06
- - Gfx: ikky
- - Music: Fabi(?) TODO
+ - Code: Idaho06
+ - Gfx: Ikky
+ - Music: Fabi
+ - Hosting: Palo
 
 So don't wait any longer, hit that download button and experience the Christmas demo that everyone will be talking about. Trust us, you won't be disappointed.
 
@@ -42,9 +43,3 @@ Run the following command to build and run the rust program using cargo:
 $ cargo run --release
 
 And that's it! You should now have the AkinoSoft Christmas demo running on your system. Happy hacking!
-
-
-
-
-
-
